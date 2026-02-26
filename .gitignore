@@ -1,52 +1,52 @@
 ###############################################################################
-# ОБЩЕЕ временные файлы, мусор, логи
+# ОБЩЕЕ: временные файлы, мусор, логи
 ###############################################################################
 
 # Логи
-.log
-npm-debug.log
-yarn-debug.log
-yarn-error.log
-pnpm-debug.log
-lerna-debug.log
-.pid
-.seed
-.pid.lock
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.pid
+*.seed
+*.pid.lock
 
-# Временные файлыбэкапы
-~
-.tmp
-.temp
-.bak
-.swp
-.swo
-.orig
-.old
-.save
+# Временные файлы/бэкапы
+*~
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.orig
+*.old
+*.save
 
-# Артефакты тестовпокрытия (общее)
-coverage
-.nyc_output
-.lcov
-.gcov
-.gcda
-.gcno
-.profraw
-.profdata
+# Артефакты тестов/покрытия (общее)
+coverage/
+.nyc_output/
+*.lcov
+*.gcov
+*.gcda
+*.gcno
+*.profraw
+*.profdata
 
-# Сжатыепакеты
-.zip
-.tar
-.tar.gz
-.tgz
-.7z
-.rar
-.gz
+# Сжатые/пакеты
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.gz
 
 # Системные файлы
 .DS_Store
-.DS_Store
-._
+.DS_Store?
+._*
 .Spotlight-V100
 .Trashes
 .AppleDouble
@@ -55,235 +55,233 @@ coverage
 .fseventsd
 
 Thumbs.db
-Thumbs.dbencryptable
+Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 Desktop.ini
-$RECYCLE.BIN
+$RECYCLE.BIN/
 
 # Linux
-~
-.nfs
+*~
+.nfs*
 
 ###############################################################################
-# IDEРЕДАКТОРЫ VS Code, JetBrains, Visual Studio, Xcode и прочее
+# IDE/РЕДАКТОРЫ: VS Code, JetBrains, Visual Studio, Xcode и прочее
 ###############################################################################
 
 # VS Code
-.vscode
-!.vscodesettings.json
-!.vscodetasks.json
-!.vscodelaunch.json
-!.vscodeextensions.json
-!.vscode.code-snippets
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
 
 # Локальная история VS Code
-.history
-.vsix
+.history/
+*.vsix
 
 # JetBrains (CLion, WebStorm, IntelliJ и т.д.)
-.idea
-.iml
-.ipr
-.iws
-out
-# Иногда полезно не игнорировать shared configs
-#.ideacodeStyles
-#.idearunConfigurations
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+# Иногда полезно не игнорировать shared configs:
+#.idea/codeStyles/
+#.idea/runConfigurations/
 
 # Visual Studio (Windows)
-.vs
-.suo
-.user
-.userosscache
-.sln.docstates
-.VC.db
-.VC.VC.opendb
-ipch
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+ipch/
 
 # Xcode
-.xcodeproj
-!.xcodeprojproject.pbxproj
-!.xcodeprojxcshareddata
-.xcworkspace
-!.xcworkspacecontents.xcworkspacedata
-xcuserdata
-DerivedData
-.moved-aside
-.xcuserstate
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+xcuserdata/
+DerivedData/
+*.moved-aside
+*.xcuserstate
 
 # Sublime Text
-.sublime-workspace
-.sublime-project
+*.sublime-workspace
+*.sublime-project
 
-# VimEmacs
-.vim
-.elc
+# Vim/Emacs
+*.vim
+*.elc
 
 ###############################################################################
-# NODE.JS  TS  JS зависимости, сборки, кеши, среды
+# NODE.JS / TS / JS: зависимости, сборки, кеши, среды
 ###############################################################################
 
 # Зависимости
-node_modules
-jspm_packages
+node_modules/
+jspm_packages/
 
 # Plug'n'Play (Yarn)
-.pnp.
-.yarn
-!.yarnpatches
-!.yarnplugins
-!.yarnreleases
-!.yarnsdks
-!.yarnversions
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 # Выходные директории сборки (частые)
-dist
-build
-out
-lib
-es
-esm
-cjs
-.tmp
-.temp
-.cache
+dist/
+build/
+out/
+lib/
+es/
+esm/
+cjs/
+.tmp/
+.temp/
+.cache/
 
-# Next.js  Nuxt  SvelteKit  Gatsby и др. (если встретятся)
-.next
-.nuxt
-.output
-.svelte-kit
-.gatsby
-.gatsby-cache
+# Next.js / Nuxt / SvelteKit / Gatsby и др. (если встретятся)
+.next/
+.nuxt/
+.output/
+.svelte-kit/
+.gatsby/
+.gatsby-cache/
 
-# ViteParcelWebpackrollup кэши
-.vite
-.parcel-cache
-webpack-cache
-.rollup.cache
+# Vite/Parcel/Webpack/rollup кэши
+.vite/
+.parcel-cache/
+webpack-cache/
+.rollup.cache/
 
 # TypeScript
-.tsbuildinfo
+*.tsbuildinfo
 
 # Тестовые раннеры
-.jest
-jest-cache
-.mocha
-.nyc_output
+.jest/
+jest-cache/
+.mocha/
+.nyc_output/
 
-# ESLintStylelintPrettier кэш
+# ESLint/Stylelint/Prettier кэш
 .eslintcache
 .stylelintcache
-.prettier-cache
+.prettier-cache/
 
 # Storybook
-storybook-static
+storybook-static/
 
-# ServerlessCloud tools
-.serverless
-.fusebox
-.dynamodb
+# Serverless/Cloud tools
+.serverless/
+.fusebox/
+.dynamodb/
 
 # Environment files (секреты)
 .env
-.env.
+.env.*
 !.env.example
 !.env.sample
 !.env.template
 
 # Локальные настройки
-.local
-.local.
+*.local
+*.local.*
 
-# NPM  Yarn  PNPM lock (ВАЖНО выберите вашу стратегию!)
+# NPM / Yarn / PNPM lock (ВАЖНО: выберите вашу стратегию!)
 # Обычно lock-файл НУЖНО коммитить. Поэтому ниже ничего не игнорируем по умолчанию.
-# Если вы точно НЕ хотите коммитить lock-файл — раскомментируйте один из блоков
+# Если вы точно НЕ хотите коммитить lock-файл — раскомментируйте один из блоков:
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
 
 ###############################################################################
-# FRONTEND HTML  CSS  ассеты сборки
+# FRONTEND: HTML / CSS / ассеты сборки
 ###############################################################################
 
 # Карты исходников
-.map
+*.map
 
 # Минифицированные артефакты (часто их генерит сборка)
-.min.css
-.min.js
+*.min.css
+*.min.js
 
 # Артефакты препроцессоров CSS (если будут)
-.sass-cache
-.css.map
+.sass-cache/
+*.css.map
 
-# Tailwind  PostCSS кэши (если будут)
+# Tailwind / PostCSS кэши (если будут)
 .tailwindcache
-.postcss-cache
+.postcss-cache/
 
 ###############################################################################
-# C  C++ сборки, объектники, библиотеки, отладка, инструменты
+# C / C++: сборки, объектники, библиотеки, отладка, инструменты
 ###############################################################################
 
 # Object files
-.o
-.obj
-.lo
-.slo
+*.o
+*.obj
+*.lo
+*.slo
 
 # Precompiled Headers
-.gch
-.pch
+*.gch
+*.pch
 
 # Libraries
-.a
-.lib
-.la
-.lo
-.so
-.so.
-.dylib
-.dll
+*.a
+*.lib
+*.la
+*.lo
+*.so
+*.so.*
+*.dylib
+*.dll
 
 # Executables
-.exe
-.out
-.app
-.i86
-.x86_64
-.hex
-.elf
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+*.elf
 
-# Debug symbols  core dumps
-.dSYM
-.dSYM.zip
-.dSYM.tar.gz
-.pdb
-.idb
-.ilk
-core
-core.
-vgcore.
+# Debug symbols / core dumps
+*.dSYM/
+*.dSYM.zip
+*.dSYM.tar.gz
+*.pdb
+*.idb
+*.ilk
+vgcore.*
 
 # Dependency files
-.d
+*.d
 
 # Build directories (общие)
-build
-Build
-bin
-Bin
-obj
-Obj
-cmake-build-
-CMakeFiles
+build/
+Build/
+bin/
+Bin/
+obj/
+Obj/
+cmake-build-*/
+CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 compile_commands.json
 
-# CMake presetsuser files
+# CMake presets/user files
 CMakeUserPresets.json
 
 # Ninja
@@ -291,7 +289,7 @@ CMakeUserPresets.json
 .ninja_log
 
 # Autotools
-autom4te.cache
+autom4te.cache/
 aclocal.m4
 compile
 config.cache
@@ -305,77 +303,73 @@ stamp-h1
 Makefile.in
 
 # Meson
-meson-private
-meson-logs
-meson-info
-builddir
+meson-private/
+meson-logs/
+meson-info/
+builddir/
 
 # Bazel
-bazel-
+bazel-*
 # Buck
-buck-out
+buck-out/
 # Conan
 conaninfo.txt
-conanbuildinfo.
+conanbuildinfo.*
 conan.lock
 # vcpkg artifacts (обычно это внешний deps, но если в репе — можно игнорить)
-vcpkg_installed
+vcpkg_installed/
 
-# CLion  C++ tooling
-cmake-build-debug
-cmake-build-release
+# CLion / C++ tooling
+cmake-build-debug/
+cmake-build-release/
 
-# Coverage tools (CC++)
-.gcno
-.gcda
-.gcov
-.gcov.json
-.profraw
-.profdata
+# Coverage tools (C/C++)
+*.gcno
+*.gcda
+*.gcov
+*.gcov.json
+*.profraw
+*.profdata
 
-# Sanitizers  perf
-.perf
-perf.data
-.stackdump
-
-###############################################################################
-# ДОКУМЕНТЫ  СБОРКА САЙТА (если появится)
-###############################################################################
-# Jekyll  Hugo  Docusaurus и т.п.
-_site
-.public
-.docusaurus
-.cache-loader
+# Sanitizers / perf
+*.perf
+perf.data*
+*.stackdump
 
 ###############################################################################
-# Docker  Kubernetes  Terraform (если появится)
+# ДОКУМЕНТЫ / СБОРКА САЙТА (если появится)
+###############################################################################
+# Jekyll / Hugo / Docusaurus и т.п.
+_site/
+.public/
+.docusaurus/
+.cache-loader/
+
+###############################################################################
+# Docker / Kubernetes / Terraform (если появится)
 ###############################################################################
 # Локальные файлы
-.envrc
-.terraform
+*.envrc
+.terraform/
 terraform.tfstate
-terraform.tfstate.
+terraform.tfstate.*
 crash.log
 
 ###############################################################################
-# ПОЛЕЗНЫЕ ИСКЛЮЧЕНИЯ  ПРИМЕРЫ (раскомментируйте при желании)
+# ПОЛЕЗНЫЕ ИСКЛЮЧЕНИЯ / ПРИМЕРЫ (раскомментируйте при желании)
 ###############################################################################
 
-# Если хотите коммитить бинарники в bin для релизов — уберите bin выше
-# !bin
+# Если хотите коммитить бинарники в /bin для релизов — уберите bin/ выше
+# !bin/**
 
-# Если хотите коммитить dist для GitHub Pages — уберите dist выше
-# !dist
+# Если хотите коммитить dist для GitHub Pages — уберите dist/ выше
+# !dist/**
 
-# Если нужно сохранить .vscodesettings.json — уже разрешено выше
-.tlog
-.recipe
-.vcxproj
-.gif
-.dat
-.mp4
-.jpg
-lw1/task1/task1/x64/Debug/task1.tlog/link.secondary.1.tlog
+# Если нужно сохранить .vscode/settings.json — уже разрешено выше
 *.tlog
-*.dll
-*.ilk
+*.recipe
+*.vcxproj
+*.gif
+*.dat
+*.mp4
+*.jpg
