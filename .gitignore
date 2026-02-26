@@ -1,0 +1,381 @@
+###############################################################################
+# ОБЩЕЕ временные файлы, мусор, логи
+###############################################################################
+
+# Логи
+.log
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+lerna-debug.log
+.pid
+.seed
+.pid.lock
+
+# Временные файлыбэкапы
+~
+.tmp
+.temp
+.bak
+.swp
+.swo
+.orig
+.old
+.save
+
+# Артефакты тестовпокрытия (общее)
+coverage
+.nyc_output
+.lcov
+.gcov
+.gcda
+.gcno
+.profraw
+.profdata
+
+# Сжатыепакеты
+.zip
+.tar
+.tar.gz
+.tgz
+.7z
+.rar
+.gz
+
+# Системные файлы
+.DS_Store
+.DS_Store
+._
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.AppleDB
+.AppleDesktop
+.fseventsd
+
+Thumbs.db
+Thumbs.dbencryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN
+
+# Linux
+~
+.nfs
+
+###############################################################################
+# IDEРЕДАКТОРЫ VS Code, JetBrains, Visual Studio, Xcode и прочее
+###############################################################################
+
+# VS Code
+.vscode
+!.vscodesettings.json
+!.vscodetasks.json
+!.vscodelaunch.json
+!.vscodeextensions.json
+!.vscode.code-snippets
+
+# Локальная история VS Code
+.history
+.vsix
+
+# JetBrains (CLion, WebStorm, IntelliJ и т.д.)
+.idea
+.iml
+.ipr
+.iws
+out
+# Иногда полезно не игнорировать shared configs
+#.ideacodeStyles
+#.idearunConfigurations
+
+# Visual Studio (Windows)
+.vs
+.suo
+.user
+.userosscache
+.sln.docstates
+.VC.db
+.VC.VC.opendb
+ipch
+
+# Xcode
+.xcodeproj
+!.xcodeprojproject.pbxproj
+!.xcodeprojxcshareddata
+.xcworkspace
+!.xcworkspacecontents.xcworkspacedata
+xcuserdata
+DerivedData
+.moved-aside
+.xcuserstate
+
+# Sublime Text
+.sublime-workspace
+.sublime-project
+
+# VimEmacs
+.vim
+.elc
+
+###############################################################################
+# NODE.JS  TS  JS зависимости, сборки, кеши, среды
+###############################################################################
+
+# Зависимости
+node_modules
+jspm_packages
+
+# Plug'n'Play (Yarn)
+.pnp.
+.yarn
+!.yarnpatches
+!.yarnplugins
+!.yarnreleases
+!.yarnsdks
+!.yarnversions
+
+# Выходные директории сборки (частые)
+dist
+build
+out
+lib
+es
+esm
+cjs
+.tmp
+.temp
+.cache
+
+# Next.js  Nuxt  SvelteKit  Gatsby и др. (если встретятся)
+.next
+.nuxt
+.output
+.svelte-kit
+.gatsby
+.gatsby-cache
+
+# ViteParcelWebpackrollup кэши
+.vite
+.parcel-cache
+webpack-cache
+.rollup.cache
+
+# TypeScript
+.tsbuildinfo
+
+# Тестовые раннеры
+.jest
+jest-cache
+.mocha
+.nyc_output
+
+# ESLintStylelintPrettier кэш
+.eslintcache
+.stylelintcache
+.prettier-cache
+
+# Storybook
+storybook-static
+
+# ServerlessCloud tools
+.serverless
+.fusebox
+.dynamodb
+
+# Environment files (секреты)
+.env
+.env.
+!.env.example
+!.env.sample
+!.env.template
+
+# Локальные настройки
+.local
+.local.
+
+# NPM  Yarn  PNPM lock (ВАЖНО выберите вашу стратегию!)
+# Обычно lock-файл НУЖНО коммитить. Поэтому ниже ничего не игнорируем по умолчанию.
+# Если вы точно НЕ хотите коммитить lock-файл — раскомментируйте один из блоков
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+###############################################################################
+# FRONTEND HTML  CSS  ассеты сборки
+###############################################################################
+
+# Карты исходников
+.map
+
+# Минифицированные артефакты (часто их генерит сборка)
+.min.css
+.min.js
+
+# Артефакты препроцессоров CSS (если будут)
+.sass-cache
+.css.map
+
+# Tailwind  PostCSS кэши (если будут)
+.tailwindcache
+.postcss-cache
+
+###############################################################################
+# C  C++ сборки, объектники, библиотеки, отладка, инструменты
+###############################################################################
+
+# Object files
+.o
+.obj
+.lo
+.slo
+
+# Precompiled Headers
+.gch
+.pch
+
+# Libraries
+.a
+.lib
+.la
+.lo
+.so
+.so.
+.dylib
+.dll
+
+# Executables
+.exe
+.out
+.app
+.i86
+.x86_64
+.hex
+.elf
+
+# Debug symbols  core dumps
+.dSYM
+.dSYM.zip
+.dSYM.tar.gz
+.pdb
+.idb
+.ilk
+core
+core.
+vgcore.
+
+# Dependency files
+.d
+
+# Build directories (общие)
+build
+Build
+bin
+Bin
+obj
+Obj
+cmake-build-
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# CMake presetsuser files
+CMakeUserPresets.json
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# Autotools
+autom4te.cache
+aclocal.m4
+compile
+config.cache
+config.log
+config.status
+configure
+depcomp
+install-sh
+missing
+stamp-h1
+Makefile.in
+
+# Meson
+meson-private
+meson-logs
+meson-info
+builddir
+
+# Bazel
+bazel-
+# Buck
+buck-out
+# Conan
+conaninfo.txt
+conanbuildinfo.
+conan.lock
+# vcpkg artifacts (обычно это внешний deps, но если в репе — можно игнорить)
+vcpkg_installed
+
+# CLion  C++ tooling
+cmake-build-debug
+cmake-build-release
+
+# Coverage tools (CC++)
+.gcno
+.gcda
+.gcov
+.gcov.json
+.profraw
+.profdata
+
+# Sanitizers  perf
+.perf
+perf.data
+.stackdump
+
+###############################################################################
+# ДОКУМЕНТЫ  СБОРКА САЙТА (если появится)
+###############################################################################
+# Jekyll  Hugo  Docusaurus и т.п.
+_site
+.public
+.docusaurus
+.cache-loader
+
+###############################################################################
+# Docker  Kubernetes  Terraform (если появится)
+###############################################################################
+# Локальные файлы
+.envrc
+.terraform
+terraform.tfstate
+terraform.tfstate.
+crash.log
+
+###############################################################################
+# ПОЛЕЗНЫЕ ИСКЛЮЧЕНИЯ  ПРИМЕРЫ (раскомментируйте при желании)
+###############################################################################
+
+# Если хотите коммитить бинарники в bin для релизов — уберите bin выше
+# !bin
+
+# Если хотите коммитить dist для GitHub Pages — уберите dist выше
+# !dist
+
+# Если нужно сохранить .vscodesettings.json — уже разрешено выше
+.tlog
+.recipe
+.vcxproj
+.gif
+.dat
+.mp4
+.jpg
+lw1/task1/task1/x64/Debug/task1.tlog/link.secondary.1.tlog
+*.tlog
+*.dll
+*.ilk
