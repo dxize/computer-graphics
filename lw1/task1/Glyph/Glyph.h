@@ -49,10 +49,10 @@ public:
             
         sf::RectangleShape r({ len, thickness });
         r.setOrigin({ 0.f, thickness * 0.5f });   // чтобы центр по толщине был на линии
-            
+        r.setPosition(a);
 
         float angleRad = std::atan2(d.y, d.x);    // atan2 -> радианы
-        r.setRotation(sf::radians(angleRad));  
+        r.setRotation(sf::radians(angleRad));     // SFML 3: нужен sf::Angle
 
         r.setFillColor(sf::Color::White);
         m_rects.push_back(r);
