@@ -1,8 +1,7 @@
 #pragma once
-#include "IMotionStrategy.h"
 #include <cmath>
 
-class BallisticJump final : public IMotionStrategy 
+class BallisticJump final 
 {
 public:
     BallisticJump(float v0, float g) 
@@ -11,7 +10,7 @@ public:
         m_period = 2.f * m_v0 / m_g;
     }
 
-    float yOffset(float t, float phase) const override
+    float yOffset(float t, float phase) const
     {
         float tau = std::fmod(t + phase, m_period);
         float h = m_v0 * tau - 0.5f * m_g * tau * tau;

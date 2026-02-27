@@ -57,7 +57,7 @@ private:
             sf::VideoMode(sf::Vector2u{ m_cfg.wndW, m_cfg.wndH }),
             utf8ToSfString(u8"Хэппи Букви")
         );
-        m_window.setFramerateLimit(60);
+        m_window.setFramerateLimit(144);
     }
 
     void createFactory()
@@ -80,7 +80,10 @@ private:
         for (size_t i = 0; i < m_letters.size(); ++i)
         {
             totalW += m_letters[i].glyph.advance();
-            if (i + 1 < m_letters.size()) totalW += m_cfg.gap;
+            if (i + 1 < m_letters.size())
+            {
+                totalW += m_cfg.gap;
+            }
         }
         return totalW;
     }
@@ -104,12 +107,16 @@ private:
         while (const auto event = m_window.pollEvent())
         {
             if (event->is<sf::Event::Closed>())
+            {
                 m_window.close();
+            }
 
             if (const auto* kp = event->getIf<sf::Event::KeyPressed>())
             {
                 if (kp->scancode == sf::Keyboard::Scancode::Escape)
+                {
                     m_window.close();
+                }
             }
         }
     }
@@ -118,14 +125,20 @@ private:
     {
         float t = m_clock.getElapsedTime().asSeconds();
         for (auto& ag : m_letters)
+        {
             ag.update(t, m_motion);
+        }
     }
 
     void render()
     {
         m_window.clear(sf::Color(12, 16, 20));
+
         for (const auto& ag : m_letters)
+        {
             m_window.draw(ag.glyph);
+        }
+
         m_window.display();
     }
 };

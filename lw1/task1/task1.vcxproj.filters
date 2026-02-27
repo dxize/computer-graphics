@@ -23,9 +23,6 @@
     <ClInclude Include="Core\GlyphMetrics.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Motion\IMotionStrategy.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Motion\BallisticJump.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

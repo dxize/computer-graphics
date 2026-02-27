@@ -19,9 +19,4 @@ public:
         g.addRect(0.f, baseY + S, S, legH);              // left leg
         g.addRect(W - S, baseY + S, S, legH);            // right leg
     }
-
-    float advance(const GlyphMetrics& m) const override
-    {
-        return m.w;
-    }
 };
