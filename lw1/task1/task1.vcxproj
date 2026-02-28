@@ -131,7 +131,6 @@
     <ClInclude Include="App\AppConfig.h" />
     <ClInclude Include="App\Application.h" />
     <ClInclude Include="Core\GlyphMetrics.h" />
-    <ClInclude Include="Core\Utf8.h" />
     <ClInclude Include="Glyph\Glyph.h" />
     <ClInclude Include="Glyph\GlyphFactory.h" />
     <ClInclude Include="Glyph\IGlyphStrategy.h" />

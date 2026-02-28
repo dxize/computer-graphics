@@ -44,9 +44,6 @@
     <ClInclude Include="App\AnimatedGlyph.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Utf8.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="App\AppConfig.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

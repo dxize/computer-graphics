@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 
-class BallisticJump final 
+class BallisticJump 
 {
 public:
     BallisticJump(float v0, float g) 
@@ -15,7 +15,7 @@ public:
         float tau = std::fmod(t + phase, m_period);
         float h = m_v0 * tau - 0.5f * m_g * tau * tau;
         return (h > 0.f) ? h : 0.f;
-    }
+    }       
 
 private:
     float m_v0;

@@ -10,7 +10,6 @@
 #include "../App/AnimatedGlyph.h"
 #include "../Glyph/GlyphFactory.h"
 #include "../Motion/BallisticJump.h"
-#include "../Core/Utf8.h"
 #include "../Glyph/Strategies/GlyphD.h"
 #include "../Glyph/Strategies/GlyphI.h"
 
@@ -55,7 +54,7 @@ private:
     {
         m_window = sf::RenderWindow(
             sf::VideoMode(sf::Vector2u{ m_cfg.wndW, m_cfg.wndH }),
-            utf8ToSfString(u8"Хэппи Букви")
+            sf::String(U"Хэппи Букви")
         );
         m_window.setFramerateLimit(144);
     }
