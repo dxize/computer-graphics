@@ -3,17 +3,17 @@
 
 struct Palette 
 {
-    // Background
+    //Background
     inline static const sf::Color Sky = sf::Color(170, 220, 255);
     inline static const sf::Color Grass = sf::Color(90, 180, 90);
     inline static const sf::Color Sun = sf::Color(255, 220, 80);
 
-    // Fence
+    //Fence
     inline static const sf::Color PicketFill = sf::Color(210, 190, 140);
     inline static const sf::Color PicketOutline = sf::Color(120, 95, 60);
     inline static const sf::Color RailFill = sf::Color(190, 170, 120);
 
-    // House
+    //House
     inline static const sf::Color HouseBaseFill = sf::Color(230, 200, 160);
     inline static const sf::Color HouseBaseOutline = sf::Color(120, 90, 60);
 
@@ -31,6 +31,6 @@ struct Palette
     inline static const sf::Color WindowFill = sf::Color(210, 235, 255);
     inline static const sf::Color WindowOutline = sf::Color(80, 80, 80);
 
-    // Path
+    //Path
     inline static const sf::Color PathFill = sf::Color(170, 150, 120);
 };

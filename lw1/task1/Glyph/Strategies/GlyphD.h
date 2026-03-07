@@ -12,11 +12,11 @@ public:
         float legH = 0.18f * H;
         float baseY = H - S - legH;
 
-        g.addRect(S, 0.f, W - 2.f * S, S);               // top
-        g.addRect(S, S, S, baseY - S);                   // left
-        g.addRect(W - 2.f * S, S, S, baseY - S);         // right
-        g.addRect(0.f, baseY, W, S);                     // base
-        g.addRect(0.f, baseY + S, S, legH);              // left leg
-        g.addRect(W - S, baseY + S, S, legH);            // right leg
+        g.addRect(S, 0.f, W - 2.f * S, S);               // вверх
+        g.addRect(S, S, S, baseY - S);                   // лево
+        g.addRect(W - 2.f * S, S, S, baseY - S);         // право
+        g.addRect(0.f, baseY, W, S);                     // основание
+        g.addRect(0.f, baseY + S, S, legH);              // лева€ нога
+        g.addRect(W - S, baseY + S, S, legH);            // права€ нога
     }
 };
