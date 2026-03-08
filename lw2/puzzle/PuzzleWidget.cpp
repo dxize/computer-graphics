@@ -1,93 +1,77 @@
 #include "PuzzleWidget.h"
 
-#include "PuzzleModel.h"
 #include "TileWidget.h"
 
 #include <QGridLayout>
-#include <QLayoutItem>
 
 #include <algorithm>
 #include <utility>
 
-PuzzleWidget::PuzzleWidget(PuzzleModel* model, QWidget* parent)
+PuzzleWidget::PuzzleWidget(QWidget* parent)
     : QWidget(parent)
-    , m_model(model)
     , m_gridLayout(new QGridLayout(this))
 {
-    m_gridLayout->setSpacing(1);
-    m_gridLayout->setContentsMargins(4, 4, 4, 4);
+    m_gridLayout->setSpacing(0);
+    m_gridLayout->setContentsMargins(0, 0, 0, 0);
 }
 
-void PuzzleWidget::rebuildGrid()
+void PuzzleWidget::rebuildGrid(int dimension)
 {
+    m_dimension = std::max(1, dimension);
     clearLayout();
     m_tiles.clear();
 
-    const int dimension = m_model->dimension();
-    const int count = m_model->tileCount();
-
+    const int count = m_dimension * m_dimension;
     m_tiles.reserve(count);
-    for (int i = 0; i < count; ++i) {
+
+    for (int i = 0; i < count; ++i) 
+    {
         auto* tile = new TileWidget(this);
         tile->setIndex(i);
-        tile->setSwapHandler([this](int from, int to) {
-            handleSwap(from, to);
+        tile->setSwapHandler([this](int from, int to)
+        {
+            if (m_swapHandler)
+            {
+                m_swapHandler(from, to);
+            }
         });
 
         m_tiles.push_back(tile);
-        m_gridLayout->addWidget(tile, i / dimension, i % dimension);
+        m_gridLayout->addWidget(tile, i / m_dimension, i % m_dimension);
     }
-
-    refreshTiles();
 }
 
-void PuzzleWidget::refreshTiles()
+void PuzzleWidget::setTiles(const QVector<QPixmap>& tiles)
 {
     const int currentTileSize = tileSize();
+    const int count = std::min(m_tiles.size(), tiles.size());
 
-    for (int i = 0; i < m_tiles.size(); ++i) {
+    for (int i = 0; i < count; ++i)
+    {
         m_tiles[i]->setIndex(i);
-        m_tiles[i]->setTilePixmap(m_model->tilePixmap(i), currentTileSize);
+        m_tiles[i]->setTilePixmap(tiles[i], currentTileSize);
     }
 
     updateGeometry();
 }
 
-void PuzzleWidget::setBoardChangedHandler(std::function<void()> handler)
+void PuzzleWidget::setSwapHandler(std::function<void(int, int)> handler)
 {
-    m_boardChangedHandler = std::move(handler);
-}
-
-void PuzzleWidget::setSolvedHandler(std::function<void()> handler)
-{
-    m_solvedHandler = std::move(handler);
-}
-
-void PuzzleWidget::handleSwap(int from, int to)
-{
-    m_model->swapTiles(from, to);
-    refreshTiles();
-
-    if (m_boardChangedHandler) {
-        m_boardChangedHandler();
-    }
-
-    if (m_model->isSolved() && m_solvedHandler) {
-        m_solvedHandler();
-    }
+    m_swapHandler = std::move(handler);
 }
 
 int PuzzleWidget::tileSize() const
 {
-    const int dimension = std::max(1, m_model->dimension());
-    const int size = 540 / dimension;
+    const int size = 540 / std::max(1, m_dimension);
     return std::clamp(size, 72, 170);
 }
 
 void PuzzleWidget::clearLayout()
 {
-    while (auto* item = m_gridLayout->takeAt(0)) {
-        if (item->widget()) {
+    while (auto* item = m_gridLayout->takeAt(0)) 
+    {
+        if (item->widget()) 
+        {
             item->widget()->deleteLater();
         }
         delete item;

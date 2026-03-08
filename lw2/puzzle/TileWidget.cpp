@@ -51,7 +51,8 @@ void TileWidget::setSwapHandler(std::function<void(int, int)> handler)
 
 void TileWidget::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton) 
+    {
         m_dragStartPos = event->pos();
     }
     QFrame::mousePressEvent(event);
@@ -59,15 +60,18 @@ void TileWidget::mousePressEvent(QMouseEvent* event)
 
 void TileWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    if (!(event->buttons() & Qt::LeftButton)) {
+    if (!(event->buttons() & Qt::LeftButton)) 
+    {
         return;
     }
 
-    if ((event->pos() - m_dragStartPos).manhattanLength() < QApplication::startDragDistance()) {
+    if ((event->pos() - m_dragStartPos).manhattanLength() < QApplication::startDragDistance())
+    {
         return;
     }
 
-    if (m_pixmap.isNull() || m_index < 0) {
+    if (m_pixmap.isNull() || m_index < 0) 
+    {
         return;
     }
 
@@ -83,13 +87,15 @@ void TileWidget::mouseMoveEvent(QMouseEvent* event)
 
 void TileWidget::dragEnterEvent(QDragEnterEvent* event)
 {
-    if (!event->mimeData()->hasText()) {
+    if (!event->mimeData()->hasText()) 
+    {
         return;
     }
 
     bool ok = false;
     const int from = event->mimeData()->text().toInt(&ok);
-    if (ok && from != m_index) {
+    if (ok && from != m_index) 
+    {
         event->acceptProposedAction();
     }
 }
@@ -98,11 +104,13 @@ void TileWidget::dropEvent(QDropEvent* event)
 {
     bool ok = false;
     const int from = event->mimeData()->text().toInt(&ok);
-    if (!ok || from == m_index) {
+    if (!ok || from == m_index) 
+    {
         return;
     }
 
-    if (m_swapHandler) {
+    if (m_swapHandler) 
+    {
         m_swapHandler(from, m_index);
     }
     event->acceptProposedAction();

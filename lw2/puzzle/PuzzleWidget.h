@@ -2,31 +2,28 @@
 
 #include <QWidget>
 #include <QVector>
+#include <QPixmap>
 
 #include <functional>
 
-class PuzzleModel;
 class QGridLayout;
 class TileWidget;
 
 class PuzzleWidget : public QWidget
 {
 public:
-    explicit PuzzleWidget(PuzzleModel* model, QWidget* parent = nullptr);
+    explicit PuzzleWidget(QWidget* parent = nullptr);
 
-    void rebuildGrid();
-    void refreshTiles();
-    void setBoardChangedHandler(std::function<void()> handler);
-    void setSolvedHandler(std::function<void()> handler);
+    void rebuildGrid(int dimension);
+    void setTiles(const QVector<QPixmap>& tiles);
+    void setSwapHandler(std::function<void(int, int)> handler);
 
 private:
-    void handleSwap(int from, int to);
     int tileSize() const;
     void clearLayout();
 
-    PuzzleModel* m_model = nullptr;
+    int m_dimension = 3;
     QGridLayout* m_gridLayout = nullptr;
     QVector<TileWidget*> m_tiles;
-    std::function<void()> m_boardChangedHandler;
-    std::function<void()> m_solvedHandler;
+    std::function<void(int, int)> m_swapHandler;
 };
