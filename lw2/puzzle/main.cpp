@@ -1,5 +1,6 @@
 #include "MainWindow.h"
-#include "PuzzlePresenter.h"
+#include "PuzzleDocument.h"
+#include "SoundView.h"
 
 #include <QApplication>
 
@@ -7,10 +8,14 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    MainWindow window;
-    PuzzlePresenter presenter(&window);
-    presenter.start();
+    PuzzleDocument document;
+    MainWindow window(&document);
 
+    SoundView soundView;
+    window.addView(&soundView);
+
+    window.start();
     window.show();
+
     return app.exec();
-}
+}   

@@ -21,7 +21,7 @@
     <ClCompile Include="MainWindow.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="PuzzleModel.cpp">
+    <ClCompile Include="PuzzleDocument.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="PuzzleWidget.cpp">
@@ -30,15 +30,12 @@
     <ClCompile Include="TileWidget.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="PuzzlePresenter.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
+    <ClCompile Include="SoundView.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PuzzleModel.h">
+    <ClInclude Include="PuzzleDocument.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="PuzzleWidget.h">
@@ -50,13 +47,10 @@
     <ClInclude Include="IPuzzleView.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="PuzzlePresenter.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="MainWindow.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="SoundManager.h">
+    <ClInclude Include="SoundView.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

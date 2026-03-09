@@ -5,32 +5,48 @@
 #include <QStringList>
 #include <QVector>
 
-class PuzzleModel
+class QDir;
+
+class PuzzleDocument
 {
 public:
-    PuzzleModel() = default;
+    enum class MoveResult
+    {
+        Invalid,
+        Swapped,
+        Improved,
+        Solved,
+        FinishedAllLevels
+    };
 
     bool startGame();
     bool startLevel(int level);
     void shuffle();
-    void swapTiles(int from, int to);
+    MoveResult swapTiles(int from, int to);
 
     int level() const;
     int dimension() const;
     int tileCount() const;
     int maxLevel() const;
-    bool isSolved() const;
     bool hasLevels() const;
-    bool isCorrectPosition(int index) const;
 
-    QPixmap tilePixmap(int cellIndex) const;
-    QVector<QPixmap> currentTilePixmaps() const;
+    QVector<QPixmap> currentTiles() const;
     QPixmap originalPixmap() const;
     QString lastError() const;
 
 private:
+    static QStringList findImageFiles(const QDir& dir);
+    static QStringList resolveImagePaths(QString* errorText, int maxLevels);
+
     bool loadImagePaths();
     void sliceImage();
+    bool isSolved() const;
+    bool isCorrectPosition(int index) const;
+    QPixmap tilePixmap(int cellIndex) const;
+
+private:
+    static constexpr int kImageSize = 720;
+    static constexpr int kMaxLevels = 12;
 
     int m_level = 1;
     int m_dimension = 3;

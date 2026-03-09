@@ -1,41 +1,36 @@
-#include "PuzzleModel.h"
+#include "PuzzleDocument.h"
 
 #include <QCoreApplication>
 #include <QDir>
-#include <QDirIterator>
 #include <QImageReader>
 #include <QRandomGenerator>
 
 #include <algorithm>
 #include <numeric>
 
-namespace {
-constexpr int kImageSize = 720;
-constexpr int kMaxLevels = 12;
-
-QStringList findImageFiles(const QDir& dir)
+QStringList PuzzleDocument::findImageFiles(const QDir& dir)
 {
-    if (!dir.exists()) 
+    if (!dir.exists())
     {
         return {};
     }
 
     QStringList filters;
-    const auto formats = QImageReader::supportedImageFormats();
-    for (const QByteArray& format : formats)
+    for (const QByteArray& format : QImageReader::supportedImageFormats())
     {
-        filters << QStringLiteral("*.%1").arg(QString::fromLatin1(format).toLower());
-        filters << QStringLiteral("*.%1").arg(QString::fromLatin1(format).toUpper());
+        const QString ext = QString::fromLatin1(format);
+        filters << QStringLiteral("*.") + ext.toLower();
+        filters << QStringLiteral("*.") + ext.toUpper();
     }
 
     QDir localDir(dir);
     localDir.setNameFilters(filters);
     localDir.setFilter(QDir::Files | QDir::Readable);
     localDir.setSorting(QDir::Name | QDir::IgnoreCase);
-    return localDir.entryList(QDir::Files | QDir::Readable);
+    return localDir.entryList();
 }
 
-QStringList resolveImagePaths(QString* errorText)
+QStringList PuzzleDocument::resolveImagePaths(QString* errorText, int maxLevels)
 {
     const QString appDir = QCoreApplication::applicationDirPath();
     const QString currentDir = QDir::currentPath();
@@ -47,40 +42,46 @@ QStringList resolveImagePaths(QString* errorText)
         QDir(currentDir).filePath(QStringLiteral("images"))
     };
 
-    for (const QString& candidate : candidates) 
+    for (const QString& candidate : candidates)
     {
         QDir dir(candidate);
         const QStringList names = findImageFiles(dir);
-        if (!names.isEmpty()) 
+
+        if (names.isEmpty())
         {
-            QStringList result;
-            const int count = std::min<int>(kMaxLevels, names.size());
-            for (int i = 0; i < count; ++i)
-            {
-                result << dir.filePath(names[i]);
-            }
-            return result;
+            continue;
         }
+
+        QStringList result;
+        const int count = std::min(maxLevels, static_cast<int>(names.size()));
+
+        for (int i = 0; i < count; ++i)
+        {
+            result << dir.filePath(names[i]);
+        }
+
+        return result;
     }
 
-    if (errorText) 
+    if (errorText)
     {
         *errorText = QStringLiteral("Не найдены картинки. Положи файлы в папку images рядом с exe или рядом с проектом.");
     }
+
     return {};
 }
-}
 
-bool PuzzleModel::startGame()
+bool PuzzleDocument::startGame()
 {
-    if (!loadImagePaths()) 
+    if (!loadImagePaths())
     {
         return false;
     }
+
     return startLevel(1);
 }
 
-bool PuzzleModel::startLevel(int level)
+bool PuzzleDocument::startLevel(int level)
 {
     if (m_imagePaths.isEmpty())
     {
@@ -92,7 +93,7 @@ bool PuzzleModel::startLevel(int level)
     m_dimension = 3 + (m_level - 1) / 3;
 
     QPixmap loaded(m_imagePaths[m_level - 1]);
-    if (loaded.isNull()) 
+    if (loaded.isNull())
     {
         m_lastError = QStringLiteral("Не удалось загрузить картинку уровня %1.").arg(m_level);
         return false;
@@ -104,7 +105,7 @@ bool PuzzleModel::startLevel(int level)
         Qt::KeepAspectRatioByExpanding,
         Qt::SmoothTransformation);
 
-    if (m_originalPixmap.width() != kImageSize || m_originalPixmap.height() != kImageSize) 
+    if (m_originalPixmap.width() != kImageSize || m_originalPixmap.height() != kImageSize)
     {
         const int x = std::max(0, (m_originalPixmap.width() - kImageSize) / 2);
         const int y = std::max(0, (m_originalPixmap.height() - kImageSize) / 2);
@@ -115,12 +116,13 @@ bool PuzzleModel::startLevel(int level)
 
     m_order.resize(tileCount());
     std::iota(m_order.begin(), m_order.end(), 0);
+
     shuffle();
     m_lastError.clear();
     return true;
 }
 
-void PuzzleModel::shuffle()
+void PuzzleDocument::shuffle()
 {
     if (m_order.size() < 2)
     {
@@ -128,86 +130,68 @@ void PuzzleModel::shuffle()
     }
 
     auto* generator = QRandomGenerator::global();
-    do 
+
+    do
     {
         std::shuffle(m_order.begin(), m_order.end(), *generator);
     } while (isSolved());
 }
 
-void PuzzleModel::swapTiles(int from, int to)
+PuzzleDocument::MoveResult PuzzleDocument::swapTiles(int from, int to)
 {
     if (from < 0 || to < 0 || from >= m_order.size() || to >= m_order.size() || from == to)
     {
-        return;
+        return MoveResult::Invalid;
     }
 
+    const bool fromBefore = isCorrectPosition(from);
+    const bool toBefore = isCorrectPosition(to);
+
     std::swap(m_order[from], m_order[to]);
+
+    const bool fromAfter = isCorrectPosition(from);
+    const bool toAfter = isCorrectPosition(to);
+
+    const bool improved =
+        (!fromBefore && fromAfter) ||
+        (!toBefore && toAfter);
+
+    if (isSolved())
+    {
+        return (m_level >= maxLevel())
+            ? MoveResult::FinishedAllLevels
+            : MoveResult::Solved;
+    }
+
+    return improved ? MoveResult::Improved : MoveResult::Swapped;
 }
 
-int PuzzleModel::level() const
+int PuzzleDocument::level() const
 {
     return m_level;
 }
 
-int PuzzleModel::dimension() const
+int PuzzleDocument::dimension() const
 {
     return m_dimension;
 }
 
-int PuzzleModel::tileCount() const
+int PuzzleDocument::tileCount() const
 {
     return m_dimension * m_dimension;
 }
 
-int PuzzleModel::maxLevel() const
+int PuzzleDocument::maxLevel() const
 {
-    return std::min<int>(kMaxLevels, m_imagePaths.size());
+    return std::min(kMaxLevels, static_cast<int>(m_imagePaths.size()));
 }
 
-bool PuzzleModel::isSolved() const
-{
-    for (int i = 0; i < m_order.size(); ++i) 
-    {
-        if (m_order[i] != i)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool PuzzleModel::hasLevels() const
+bool PuzzleDocument::hasLevels() const
 {
     return !m_imagePaths.isEmpty();
 }
 
-bool PuzzleModel::isCorrectPosition(int index) const
-{
-    if (index < 0 || index >= m_order.size()) 
-    {
-        return false;
-    }
-
-    return m_order[index] == index;
-}
-
-QPixmap PuzzleModel::tilePixmap(int cellIndex) const
-{
-    if (cellIndex < 0 || cellIndex >= m_order.size()) 
-    {
-        return {};
-    }
-
-    const int tileIndex = m_order[cellIndex];
-    if (tileIndex < 0 || tileIndex >= m_tiles.size()) 
-    {
-        return {};
-    }
-
-    return m_tiles[tileIndex];
-}
-
-QVector<QPixmap> PuzzleModel::currentTilePixmaps() const
+QVector<QPixmap> PuzzleDocument::currentTiles() const
 {
     QVector<QPixmap> result;
     result.reserve(m_order.size());
@@ -220,23 +204,23 @@ QVector<QPixmap> PuzzleModel::currentTilePixmaps() const
     return result;
 }
 
-QPixmap PuzzleModel::originalPixmap() const
+QPixmap PuzzleDocument::originalPixmap() const
 {
     return m_originalPixmap;
 }
 
-QString PuzzleModel::lastError() const
+QString PuzzleDocument::lastError() const
 {
     return m_lastError;
 }
 
-bool PuzzleModel::loadImagePaths()
+bool PuzzleDocument::loadImagePaths()
 {
-    m_imagePaths = resolveImagePaths(&m_lastError);
+    m_imagePaths = resolveImagePaths(&m_lastError, kMaxLevels);
     return !m_imagePaths.isEmpty();
 }
 
-void PuzzleModel::sliceImage()
+void PuzzleDocument::sliceImage()
 {
     m_tiles.clear();
 
@@ -250,11 +234,52 @@ void PuzzleModel::sliceImage()
     const int tileHeight = image.height() / m_dimension;
 
     m_tiles.reserve(tileCount());
+
     for (int row = 0; row < m_dimension; ++row)
     {
-        for (int col = 0; col < m_dimension; ++col) 
+        for (int col = 0; col < m_dimension; ++col)
         {
-            m_tiles.push_back(QPixmap::fromImage(image.copy(col * tileWidth, row * tileHeight, tileWidth, tileHeight)));
+            m_tiles.push_back(QPixmap::fromImage(
+                image.copy(col * tileWidth, row * tileHeight, tileWidth, tileHeight)));
         }
     }
+}
+
+bool PuzzleDocument::isSolved() const
+{
+    for (int i = 0; i < m_order.size(); ++i)
+    {
+        if (m_order[i] != i)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool PuzzleDocument::isCorrectPosition(int index) const
+{
+    if (index < 0 || index >= m_order.size())
+    {
+        return false;
+    }
+
+    return m_order[index] == index;
+}
+
+QPixmap PuzzleDocument::tilePixmap(int cellIndex) const
+{
+    if (cellIndex < 0 || cellIndex >= m_order.size())
+    {
+        return {};
+    }
+
+    const int tileIndex = m_order[cellIndex];
+    if (tileIndex < 0 || tileIndex >= m_tiles.size())
+    {
+        return {};
+    }
+
+    return m_tiles[tileIndex];
 }

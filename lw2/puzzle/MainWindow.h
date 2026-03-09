@@ -1,29 +1,42 @@
 #pragma once
 
 #include "IPuzzleView.h"
+#include "PuzzleDocument.h"
 
 #include <QMainWindow>
+#include <QVector>
+#include <functional>
 
 class QLabel;
-class PuzzleWidget;
 class QPushButton;
+class PuzzleWidget;
 
 class MainWindow : public QMainWindow, public IPuzzleView
 {
 public:
-    explicit MainWindow(QWidget* parent = nullptr);
+    explicit MainWindow(PuzzleDocument* document);
 
-    void setNewGameHandler(std::function<void()> handler) override;
-    void setShuffleHandler(std::function<void()> handler) override;
-    void setTileSwapHandler(std::function<void(int, int)> handler) override;
+    void addView(IPuzzleView* view);
+    void start();
 
-    void rebuildBoard(int dimension) override;
-    void showTiles(const QVector<QPixmap>& tiles) override;
-    void showSidebar(int level, int dimension, const QPixmap& preview) override;
-    bool askGoToNextLevel() override;
+    void syncWithDocument(const PuzzleDocument& document) override;
     void showInfoMessage(const QString& title, const QString& text) override;
+    bool askGoToNextLevel() override;
 
 private:
+    bool isPositiveResult(PuzzleDocument::MoveResult result) const;
+    void startNewGame();
+    void shuffleGame();
+    void handleSwap(int from, int to);
+    void goToNextLevel();
+    void notifySync();
+    void forEachView(const std::function<void(IPuzzleView*)>& action);
+
+private:
+    PuzzleDocument* m_document = nullptr;
+    QVector<IPuzzleView*> m_otherViews;
+    int m_currentDimension = 0;
+
     PuzzleWidget* m_puzzleWidget = nullptr;
     QLabel* m_levelLabel = nullptr;
     QLabel* m_sizeLabel = nullptr;

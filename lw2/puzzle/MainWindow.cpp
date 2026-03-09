@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 
+#include "PuzzleDocument.h"
 #include "PuzzleWidget.h"
 
 #include <QApplication>
@@ -12,8 +13,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow(PuzzleDocument* document)
+    : m_document(document)
 {
     setWindowTitle(QStringLiteral("Picture Puzzle"));
     resize(980, 760);
@@ -29,6 +30,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     auto* sidePanel = new QWidget(central);
     sidePanel->setFixedWidth(260);
+
     auto* sideLayout = new QVBoxLayout(sidePanel);
     sideLayout->setSpacing(10);
     sideLayout->setAlignment(Qt::AlignTop);
@@ -42,6 +44,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     m_levelLabel = new QLabel(sidePanel);
     m_levelLabel->setAlignment(Qt::AlignCenter);
+
     m_sizeLabel = new QLabel(sidePanel);
     m_sizeLabel->setAlignment(Qt::AlignCenter);
 
@@ -53,8 +56,6 @@ MainWindow::MainWindow(QWidget* parent)
     m_newGameButton = new QPushButton(QStringLiteral("Новая игра"), sidePanel);
     m_shuffleButton = new QPushButton(QStringLiteral("Перемешать"), sidePanel);
     auto* quitButton = new QPushButton(QStringLiteral("Выход"), sidePanel);
-
-    connect(quitButton, &QPushButton::clicked, qApp, &QApplication::quit);
 
     sideLayout->addWidget(titleLabel);
     sideLayout->addWidget(m_levelLabel);
@@ -70,51 +71,59 @@ MainWindow::MainWindow(QWidget* parent)
 
     rootLayout->addWidget(sidePanel);
     setCentralWidget(central);
+
+    connect(m_newGameButton, &QPushButton::clicked, this, [this]() {
+        startNewGame();
+        });
+
+    connect(m_shuffleButton, &QPushButton::clicked, this, [this]() {
+        shuffleGame();
+        });
+
+    connect(quitButton, &QPushButton::clicked, qApp, &QApplication::quit);
+
+    m_puzzleWidget->setSwapHandler([this](int from, int to) {
+        handleSwap(from, to);
+        });
 }
 
-void MainWindow::setNewGameHandler(std::function<void()> handler)
+void MainWindow::addView(IPuzzleView* view)
 {
-    connect(m_newGameButton, &QPushButton::clicked, this, [handler = std::move(handler)]() {
-        if (handler)
-        {
-            handler();
-        }
-    });
+    if (view && view != this)
+    {
+        m_otherViews.push_back(view);
+    }
 }
 
-void MainWindow::setShuffleHandler(std::function<void()> handler)
+void MainWindow::start()
 {
-    connect(m_shuffleButton, &QPushButton::clicked, this, [handler = std::move(handler)]() {
-        if (handler) {
-            handler();
-        }
-    });
+    startNewGame();
 }
 
-void MainWindow::setTileSwapHandler(std::function<void(int, int)> handler)
+void MainWindow::syncWithDocument(const PuzzleDocument& document)
 {
-    m_puzzleWidget->setSwapHandler(std::move(handler));
-}
+    if (m_currentDimension != document.dimension())
+    {
+        m_currentDimension = document.dimension();
+        m_puzzleWidget->rebuildGrid(m_currentDimension);
+    }
 
-void MainWindow::rebuildBoard(int dimension)
-{
-    m_puzzleWidget->rebuildGrid(dimension);
-}
+    m_puzzleWidget->setTiles(document.currentTiles());
 
-void MainWindow::showTiles(const QVector<QPixmap>& tiles)
-{
-    m_puzzleWidget->setTiles(tiles);
-}
+    m_levelLabel->setText(QStringLiteral("Уровень: %1").arg(document.level()));
+    m_sizeLabel->setText(QStringLiteral("Поле: %1 x %2")
+        .arg(document.dimension())
+        .arg(document.dimension()));
 
-void MainWindow::showSidebar(int level, int dimension, const QPixmap& preview)
-{
-    m_levelLabel->setText(QStringLiteral("Уровень: %1").arg(level));
-    m_sizeLabel->setText(QStringLiteral("Поле: %1 x %2").arg(dimension).arg(dimension));
-
-    m_previewLabel->setPixmap(preview.scaled(
+    m_previewLabel->setPixmap(document.originalPixmap().scaled(
         m_previewLabel->size(),
         Qt::KeepAspectRatio,
         Qt::SmoothTransformation));
+}
+
+void MainWindow::showInfoMessage(const QString& title, const QString& text)
+{
+    QMessageBox::information(this, title, text);
 }
 
 bool MainWindow::askGoToNextLevel()
@@ -123,13 +132,134 @@ bool MainWindow::askGoToNextLevel()
     messageBox.setWindowTitle(QStringLiteral("Победа"));
     messageBox.setText(QStringLiteral("Картинка собрана!"));
     messageBox.setInformativeText(QStringLiteral("Перейти на следующий уровень?"));
-    const auto* nextButton = messageBox.addButton(QStringLiteral("Следующий уровень"), QMessageBox::AcceptRole);
+
+    const auto* nextButton =
+        messageBox.addButton(QStringLiteral("Следующий уровень"), QMessageBox::AcceptRole);
+
     messageBox.addButton(QStringLiteral("Остаться"), QMessageBox::RejectRole);
     messageBox.exec();
+
     return messageBox.clickedButton() == nextButton;
 }
 
-void MainWindow::showInfoMessage(const QString& title, const QString& text)
+bool MainWindow::isPositiveResult(PuzzleDocument::MoveResult result) const
 {
-    QMessageBox::information(this, title, text);
+    return result == PuzzleDocument::MoveResult::Improved ||
+        result == PuzzleDocument::MoveResult::Solved ||
+        result == PuzzleDocument::MoveResult::FinishedAllLevels;
+}
+
+void MainWindow::startNewGame()
+{
+    if (!m_document || !m_document->startGame())
+    {
+        showInfoMessage(
+            QStringLiteral("Нет картинок"),
+            m_document ? m_document->lastError()
+            : QStringLiteral("Документ не подключён."));
+        return;
+    }
+
+    forEachView([](IPuzzleView* view) {
+        view->startMusic();
+        });
+
+    notifySync();
+}
+
+void MainWindow::shuffleGame()
+{
+    if (!m_document || !m_document->hasLevels())
+    {
+        return;
+    }
+
+    m_document->shuffle();
+    notifySync();
+}
+
+void MainWindow::handleSwap(int from, int to)
+{
+    if (!m_document || !m_document->hasLevels())
+    {
+        return;
+    }
+
+    const PuzzleDocument::MoveResult result = m_document->swapTiles(from, to);
+    if (result == PuzzleDocument::MoveResult::Invalid)
+    {
+        return;
+    }
+
+    notifySync();
+
+    if (isPositiveResult(result))
+    {
+        forEachView([](IPuzzleView* view) {
+            view->playGoodSwap();
+            });
+    }
+    else
+    {
+        forEachView([](IPuzzleView* view) {
+            view->playSwap();
+            });
+    }
+
+    if (result == PuzzleDocument::MoveResult::Solved)
+    {
+        if (askGoToNextLevel())
+        {
+            goToNextLevel();
+        }
+    }
+    else if (result == PuzzleDocument::MoveResult::FinishedAllLevels)
+    {
+        forEachView([](IPuzzleView* view) {
+            view->stopMusic();
+            });
+
+        showInfoMessage(
+            QStringLiteral("Игра пройдена"),
+            QStringLiteral("Ты прошёл все %1 уровней.").arg(m_document->maxLevel()));
+    }
+}
+
+void MainWindow::goToNextLevel()
+{
+    if (!m_document || !m_document->startLevel(m_document->level() + 1))
+    {
+        showInfoMessage(
+            QStringLiteral("Ошибка"),
+            m_document ? m_document->lastError()
+            : QStringLiteral("Документ не подключён."));
+        return;
+    }
+
+    notifySync();
+}
+
+void MainWindow::notifySync()
+{
+    if (!m_document)
+    {
+        return;
+    }
+
+    forEachView([this](IPuzzleView* view) {
+        view->syncWithDocument(*m_document);
+        });
+}
+
+void MainWindow::forEachView(const std::function<void(IPuzzleView*)>& action)
+{
+    action(this);
+
+    for (IPuzzleView* view : m_otherViews)
+    {
+        if (view)
+        {
+            action(view);
+        }
+    }
 }

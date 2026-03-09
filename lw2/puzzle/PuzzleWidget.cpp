@@ -28,8 +28,7 @@ void PuzzleWidget::rebuildGrid(int dimension)
     {
         auto* tile = new TileWidget(this);
         tile->setIndex(i);
-        tile->setSwapHandler([this](int from, int to)
-        {
+        tile->setSwapHandler([this](int from, int to) {
             if (m_swapHandler)
             {
                 m_swapHandler(from, to);
@@ -44,7 +43,7 @@ void PuzzleWidget::rebuildGrid(int dimension)
 void PuzzleWidget::setTiles(const QVector<QPixmap>& tiles)
 {
     const int currentTileSize = tileSize();
-    const int count = std::min(m_tiles.size(), tiles.size());
+    const int count = std::min(static_cast<int>(m_tiles.size()), static_cast<int>(tiles.size()));
 
     for (int i = 0; i < count; ++i)
     {
