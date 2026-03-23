@@ -24,6 +24,10 @@ public:
     bool askGoToNextLevel() override;
 
 private:
+    void setSetupWindow();
+    void buildUi();
+    void connectSignals();
+
     bool isPositiveResult(PuzzleDocument::MoveResult result) const;
     void startNewGame();
     void shuffleGame();
@@ -31,6 +35,10 @@ private:
     void goToNextLevel();
     void notifySync();
     void forEachView(const std::function<void(IPuzzleView*)>& action);
+
+    bool canHandleSwap() const;
+    void playSwapSound(PuzzleDocument::MoveResult result);
+    void handleSolvedResult(PuzzleDocument::MoveResult result);
 
 private:
     PuzzleDocument* m_document = nullptr;
@@ -43,4 +51,5 @@ private:
     QLabel* m_previewLabel = nullptr;
     QPushButton* m_newGameButton = nullptr;
     QPushButton* m_shuffleButton = nullptr;
+    QPushButton* m_quitButton = nullptr;
 };

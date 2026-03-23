@@ -16,10 +16,20 @@
 MainWindow::MainWindow(PuzzleDocument* document)
     : m_document(document)
 {
+    setSetupWindow();
+    buildUi();
+    connectSignals();
+}
+
+void MainWindow::setSetupWindow()
+{
     setWindowTitle(QStringLiteral("Picture Puzzle"));
     resize(980, 760);
     setMinimumSize(900, 680);
+}
 
+void MainWindow::buildUi()
+{
     auto* central = new QWidget(this);
     auto* rootLayout = new QHBoxLayout(central);
     rootLayout->setContentsMargins(12, 12, 12, 12);
@@ -55,7 +65,7 @@ MainWindow::MainWindow(PuzzleDocument* document)
 
     m_newGameButton = new QPushButton(QStringLiteral("Новая игра"), sidePanel);
     m_shuffleButton = new QPushButton(QStringLiteral("Перемешать"), sidePanel);
-    auto* quitButton = new QPushButton(QStringLiteral("Выход"), sidePanel);
+    m_quitButton = new QPushButton(QStringLiteral("Выход"), sidePanel);
 
     sideLayout->addWidget(titleLabel);
     sideLayout->addWidget(m_levelLabel);
@@ -67,11 +77,14 @@ MainWindow::MainWindow(PuzzleDocument* document)
     sideLayout->addWidget(m_newGameButton);
     sideLayout->addWidget(m_shuffleButton);
     sideLayout->addStretch(1);
-    sideLayout->addWidget(quitButton);
+    sideLayout->addWidget(m_quitButton);
 
     rootLayout->addWidget(sidePanel);
     setCentralWidget(central);
+}
 
+void MainWindow::connectSignals()
+{
     connect(m_newGameButton, &QPushButton::clicked, this, [this]() {
         startNewGame();
         });
@@ -80,7 +93,7 @@ MainWindow::MainWindow(PuzzleDocument* document)
         shuffleGame();
         });
 
-    connect(quitButton, &QPushButton::clicked, qApp, &QApplication::quit);
+    connect(m_quitButton, &QPushButton::clicked, qApp, &QApplication::quit);
 
     m_puzzleWidget->setSwapHandler([this](int from, int to) {
         handleSwap(from, to);
@@ -102,20 +115,20 @@ void MainWindow::start()
 
 void MainWindow::syncWithDocument(const PuzzleDocument& document)
 {
-    if (m_currentDimension != document.dimension())
+    if (m_currentDimension != document.getDimension())
     {
-        m_currentDimension = document.dimension();
+        m_currentDimension = document.getDimension();
         m_puzzleWidget->rebuildGrid(m_currentDimension);
     }
 
-    m_puzzleWidget->setTiles(document.currentTiles());
+    m_puzzleWidget->setTiles(document.getCurrentTiles());  
 
-    m_levelLabel->setText(QStringLiteral("Уровень: %1").arg(document.level()));
+    m_levelLabel->setText(QStringLiteral("Уровень: %1").arg(document.getLevel()));
     m_sizeLabel->setText(QStringLiteral("Поле: %1 x %2")
-        .arg(document.dimension())
-        .arg(document.dimension()));
+        .arg(document.getDimension())
+        .arg(document.getDimension()));
 
-    m_previewLabel->setPixmap(document.originalPixmap().scaled(
+    m_previewLabel->setPixmap(document.getOriginalPixmap().scaled(
         m_previewLabel->size(),
         Qt::KeepAspectRatio,
         Qt::SmoothTransformation));
@@ -155,7 +168,7 @@ void MainWindow::startNewGame()
     {
         showInfoMessage(
             QStringLiteral("Нет картинок"),
-            m_document ? m_document->lastError()
+            m_document ? m_document->getLastError()
             : QStringLiteral("Документ не подключён."));
         return;
     }
@@ -178,21 +191,13 @@ void MainWindow::shuffleGame()
     notifySync();
 }
 
-void MainWindow::handleSwap(int from, int to)
+bool MainWindow::canHandleSwap() const
 {
-    if (!m_document || !m_document->hasLevels())
-    {
-        return;
-    }
+    return m_document && m_document->hasLevels();
+}
 
-    const PuzzleDocument::MoveResult result = m_document->swapTiles(from, to);
-    if (result == PuzzleDocument::MoveResult::Invalid)
-    {
-        return;
-    }
-
-    notifySync();
-
+void MainWindow::playSwapSound(PuzzleDocument::MoveResult result)
+{
     if (isPositiveResult(result))
     {
         forEachView([](IPuzzleView* view) {
@@ -205,7 +210,10 @@ void MainWindow::handleSwap(int from, int to)
             view->playSwap();
             });
     }
+}
 
+void MainWindow::handleSolvedResult(PuzzleDocument::MoveResult result)
+{
     if (result == PuzzleDocument::MoveResult::Solved)
     {
         if (askGoToNextLevel())
@@ -221,17 +229,35 @@ void MainWindow::handleSwap(int from, int to)
 
         showInfoMessage(
             QStringLiteral("Игра пройдена"),
-            QStringLiteral("Ты прошёл все %1 уровней.").arg(m_document->maxLevel()));
+            QStringLiteral("Ты прошёл все %1 уровней.").arg(m_document->getMaxLevel()));
     }
+}
+
+void MainWindow::handleSwap(int from, int to)
+{
+    if (!canHandleSwap())
+    {
+        return;
+    }
+
+    const PuzzleDocument::MoveResult result = m_document->swapTiles(from, to);
+    if (result == PuzzleDocument::MoveResult::Invalid)
+    {
+        return;
+    }
+
+    notifySync();
+    playSwapSound(result);
+    handleSolvedResult(result);
 }
 
 void MainWindow::goToNextLevel()
 {
-    if (!m_document || !m_document->startLevel(m_document->level() + 1))
+    if (!m_document || !m_document->startLevel(m_document->getLevel() + 1))
     {
         showInfoMessage(
             QStringLiteral("Ошибка"),
-            m_document ? m_document->lastError()
+            m_document ? m_document->getLastError()
             : QStringLiteral("Документ не подключён."));
         return;
     }

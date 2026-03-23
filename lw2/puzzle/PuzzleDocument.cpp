@@ -30,42 +30,51 @@ QStringList PuzzleDocument::findImageFiles(const QDir& dir)
     return localDir.entryList();
 }
 
-QStringList PuzzleDocument::resolveImagePaths(QString* errorText, int maxLevels)
+QStringList PuzzleDocument::getImageDirectories()
 {
     const QString appDir = QCoreApplication::applicationDirPath();
     const QString currentDir = QDir::currentPath();
 
-    const QStringList candidates = {
+    return {
         QDir(appDir).filePath(QStringLiteral("images")),
         QDir(appDir).filePath(QStringLiteral("../images")),
         QDir(appDir).filePath(QStringLiteral("../../images")),
         QDir(currentDir).filePath(QStringLiteral("images"))
     };
+}
+
+QStringList PuzzleDocument::buildImagePaths(const QDir& dir, const QStringList& names, int maxLevels)
+{
+    QStringList result;
+    const int count = std::min(maxLevels, static_cast<int>(names.size()));
+
+    for (int i = 0; i < count; ++i)
+    {
+        result << dir.filePath(names[i]);
+    }
+
+    return result;
+}
+
+QStringList PuzzleDocument::resolveImagePaths(QString* errorText, int maxLevels)
+{
+    const QStringList candidates = getImageDirectories();
 
     for (const QString& candidate : candidates)
     {
         QDir dir(candidate);
         const QStringList names = findImageFiles(dir);
 
-        if (names.isEmpty())
+        if (!names.isEmpty())
         {
-            continue;
+            return buildImagePaths(dir, names, maxLevels);
         }
-
-        QStringList result;
-        const int count = std::min(maxLevels, static_cast<int>(names.size()));
-
-        for (int i = 0; i < count; ++i)
-        {
-            result << dir.filePath(names[i]);
-        }
-
-        return result;
     }
 
     if (errorText)
     {
-        *errorText = QStringLiteral("Не найдены картинки. Положи файлы в папку images рядом с exe или рядом с проектом.");
+        *errorText = QStringLiteral(
+            "Не найдены картинки. Положи файлы в папку images рядом с exe или рядом с проектом.");
     }
 
     return {};
@@ -89,7 +98,7 @@ bool PuzzleDocument::startLevel(int level)
         return false;
     }
 
-    m_level = std::clamp(level, 1, maxLevel());
+    m_level = std::clamp(level, 1, getMaxLevel());
     m_dimension = 3 + (m_level - 1) / 3;
 
     QPixmap loaded(m_imagePaths[m_level - 1]);
@@ -114,7 +123,7 @@ bool PuzzleDocument::startLevel(int level)
 
     sliceImage();
 
-    m_order.resize(tileCount());
+    m_order.resize(getTileCount());
     std::iota(m_order.begin(), m_order.end(), 0);
 
     shuffle();
@@ -158,7 +167,7 @@ PuzzleDocument::MoveResult PuzzleDocument::swapTiles(int from, int to)
 
     if (isSolved())
     {
-        return (m_level >= maxLevel())
+        return (m_level >= getMaxLevel())
             ? MoveResult::FinishedAllLevels
             : MoveResult::Solved;
     }
@@ -166,22 +175,22 @@ PuzzleDocument::MoveResult PuzzleDocument::swapTiles(int from, int to)
     return improved ? MoveResult::Improved : MoveResult::Swapped;
 }
 
-int PuzzleDocument::level() const
+int PuzzleDocument::getLevel() const
 {
     return m_level;
 }
 
-int PuzzleDocument::dimension() const
+int PuzzleDocument::getDimension() const
 {
     return m_dimension;
 }
 
-int PuzzleDocument::tileCount() const
+int PuzzleDocument::getTileCount() const
 {
     return m_dimension * m_dimension;
 }
 
-int PuzzleDocument::maxLevel() const
+int PuzzleDocument::getMaxLevel() const
 {
     return std::min(kMaxLevels, static_cast<int>(m_imagePaths.size()));
 }
@@ -191,7 +200,7 @@ bool PuzzleDocument::hasLevels() const
     return !m_imagePaths.isEmpty();
 }
 
-QVector<QPixmap> PuzzleDocument::currentTiles() const
+QVector<QPixmap> PuzzleDocument::getCurrentTiles() const
 {
     QVector<QPixmap> result;
     result.reserve(m_order.size());
@@ -204,12 +213,12 @@ QVector<QPixmap> PuzzleDocument::currentTiles() const
     return result;
 }
 
-QPixmap PuzzleDocument::originalPixmap() const
+QPixmap PuzzleDocument::getOriginalPixmap() const
 {
     return m_originalPixmap;
 }
 
-QString PuzzleDocument::lastError() const
+QString PuzzleDocument::getLastError() const
 {
     return m_lastError;
 }
@@ -233,7 +242,7 @@ void PuzzleDocument::sliceImage()
     const int tileWidth = image.width() / m_dimension;
     const int tileHeight = image.height() / m_dimension;
 
-    m_tiles.reserve(tileCount());
+    m_tiles.reserve(getTileCount());
 
     for (int row = 0; row < m_dimension; ++row)
     {

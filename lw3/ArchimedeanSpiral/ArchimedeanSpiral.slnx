@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="ArchimedeanSpiral/ArchimedeanSpiral.vcxproj" Id="73ce667a-8dcb-43a4-a86c-4e0e0e5b0a8a" />
+</Solution>

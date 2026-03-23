@@ -24,19 +24,22 @@ public:
     void shuffle();
     MoveResult swapTiles(int from, int to);
 
-    int level() const;
-    int dimension() const;
-    int tileCount() const;
-    int maxLevel() const;
+    int getLevel() const;
+    int getDimension() const;
+    int getTileCount() const;
+    int getMaxLevel() const;
     bool hasLevels() const;
 
-    QVector<QPixmap> currentTiles() const;
-    QPixmap originalPixmap() const;
-    QString lastError() const;
+    QVector<QPixmap> getCurrentTiles() const;
+    QPixmap getOriginalPixmap() const;
+    QString getLastError() const;
 
 private:
     static QStringList findImageFiles(const QDir& dir);
     static QStringList resolveImagePaths(QString* errorText, int maxLevels);
+
+    static QStringList getImageDirectories();
+    static QStringList buildImagePaths(const QDir& dir, const QStringList& names, int maxLevels);
 
     bool loadImagePaths();
     void sliceImage();
