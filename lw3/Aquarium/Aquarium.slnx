@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Aquarium/Aquarium.vcxproj" Id="066d8c75-dc16-4448-9741-2331cd4c2a02" />
+</Solution>

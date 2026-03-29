@@ -1,6 +1,5 @@
 #include "Projection.h"
 
-#include "MathUtils.h"
 #include "Constants.h"
 
 #include <GLFW/glfw3.h>
@@ -20,7 +19,7 @@ Projection::Projection()
 void Projection::configure(float maxRadius, int minTicksPerAxis)
 {
     const float maxAllowedStep = (2.0f * maxRadius) / static_cast<float>(minTicksPerAxis); 
-    m_tickStep = MathUtils::niceStepFloor(maxAllowedStep);
+    m_tickStep = maxAllowedStep;
     m_baseHalfExtent = maxRadius + 2.0f * m_tickStep;
 }
 
