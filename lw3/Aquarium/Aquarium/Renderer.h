@@ -7,8 +7,6 @@ class Renderer
 public:
     void color(const Color& c) const;
 
-    void quad(float x1, float y1, float x2, float y2, const Color& c) const;
-
     void gradientQuad(float x1, float y1, float x2, float y2,
         const Color& c1, const Color& c2,
         const Color& c3, const Color& c4) const;

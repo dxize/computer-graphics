@@ -28,7 +28,7 @@ void Pebble::draw(const Renderer& renderer) const
         break;
     case Kind::Triangle:
         renderer.polygon({ {-2.0f, -1.0f}, {0.0f, 1.5f}, {2.0f, -1.0f} }, { 0.42f, 0.38f, 0.34f, 1.0f });
-        break;
+        break;  
     case Kind::Dark:
         renderer.ellipse({ 0.0f, 0.0f }, 2.2f, 1.5f, { 0.32f, 0.33f, 0.36f, 1.0f });
         break;

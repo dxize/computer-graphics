@@ -25,12 +25,12 @@ void Seaweed::drawBlade(float time, float xOffset, float scale, const Color& bla
         {
             float t = static_cast<float>(i) / static_cast<float>(segments);
             float y = baseY + t * height * scale;
-            float sway = std::sin(time * 1.7f + phase + t * 4.0f) * (1.0f + t * 1.7f);
+            float sway = std::sin(time * 3.0f + phase + t * 4.0f) * (t * 2.7f);
             float cx = x + xOffset + sway;
-            float half = width * scale * (1.0f - t * 0.55f);
+            float fullWidth = width * scale * (1.0f - t * 0.55f);
 
-            glVertex2f(cx - half, y);
-            glVertex2f(cx + half, y);
+            glVertex2f(cx - fullWidth, y);
+            glVertex2f(cx + fullWidth, y);
         }
 
     glEnd();

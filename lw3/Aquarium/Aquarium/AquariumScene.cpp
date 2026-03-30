@@ -53,7 +53,6 @@ void AquariumScene::draw(const Renderer& renderer, float time) const
         bubble.draw(renderer);
     }
 
-    drawGlass(renderer);
 }
 
 void AquariumScene::createScene()
@@ -123,21 +122,4 @@ void AquariumScene::drawBackground(const Renderer& renderer) const
 
     renderer.ellipse({ -22.0f, 25.0f }, 18.0f, 6.0f, { 1.0f, 1.0f, 1.0f, 0.05f });
     renderer.ellipse({ 18.0f, 12.0f }, 16.0f, 5.0f, { 1.0f, 1.0f, 1.0f, 0.04f });
-}
-
-void AquariumScene::drawGlass(const Renderer& renderer) const 
-{
-    renderer.quad(-48.5f, -36.0f, -47.3f, 36.0f, { 0.85f, 0.95f, 1.0f, 0.18f });
-    renderer.quad(47.3f, -36.0f, 48.5f, 36.0f, { 0.85f, 0.95f, 1.0f, 0.18f });
-    renderer.quad(-48.5f, 34.8f, 48.5f, 36.0f, { 0.95f, 0.98f, 1.0f, 0.16f });
-    renderer.quad(-48.5f, -36.0f, 48.5f, -34.8f, { 0.50f, 0.56f, 0.65f, 0.45f });
-
-    glLineWidth(2.0f);
-    glColor4f(0.70f, 0.86f, 0.98f, 0.60f);
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(-48.5f, -36.0f);
-        glVertex2f(48.5f, -36.0f);
-        glVertex2f(48.5f, 36.0f);
-        glVertex2f(-48.5f, 36.0f);
-    glEnd();
 }
