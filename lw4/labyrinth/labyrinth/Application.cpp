@@ -20,7 +20,7 @@ int Application::run()
 
     setupWindow();
     initScene();
-    loop();
+    runLoop();
     shutdown();
     return 0;
 }
@@ -35,7 +35,7 @@ bool Application::createWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    window = glfwCreateWindow(width, height, "3D Maze - SRP / old OpenGL + GLFW", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "Maze", nullptr, nullptr);
     return window != nullptr;
 }
 
@@ -54,7 +54,7 @@ void Application::initScene()
     lastTime = static_cast<float>(glfwGetTime());
 }
 
-void Application::loop()
+void Application::runLoop()
 {
     while (!shouldClose())
     {

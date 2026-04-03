@@ -17,7 +17,10 @@ void Renderer::initOpenGL() const
     glEnable(GL_NORMALIZE);
     glShadeModel(GL_SMOOTH);
 
-    GLfloat globalAmbient[] = { 0.08f, 0.08f, 0.08f, 1.0f };
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+
+    GLfloat globalAmbient[] = { 0.06f, 0.06f, 0.06f, 1.0f };
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
     glClearColor(0.04f, 0.04f, 0.06f, 1.0f);
@@ -49,42 +52,45 @@ void Renderer::drawScene(const Maze& maze, const Player& player) const
 {
     beginScene(player);
     drawFloor(maze);
-    drawCeiling(maze);
+    //drawCeiling(maze);
     drawWalls(maze);
 }
 
 void Renderer::beginScene(const Player& player) const
 {
     glLoadIdentity();
-    setupLight();
 
     glRotatef(-player.getPitch() * 180.0f / PI, 1.0f, 0.0f, 0.0f);
     glRotatef(-player.getAngle() * 180.0f / PI, 0.0f, 1.0f, 0.0f);
-
     glTranslatef(-player.getX(), -PLAYER_HEIGHT, -player.getZ());
+
+    setupLight(player);
 }
 
-void Renderer::setupLight() const
+void Renderer::setupLight(const Player& player) const
 {
-    GLfloat lightPosition[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    GLfloat lightDirection[] = { 0.0f, 0.0f, -1.0f };
+    GLfloat lightPosition[] =
+    {
+        player.getX(),
+        PLAYER_HEIGHT,
+        player.getZ(),
+        1.0f
+    };
 
-    GLfloat lightDiffuse[] = { 0.72f, 0.72f, 0.68f, 1.0f };
-    GLfloat lightSpecular[] = { 0.30f, 0.30f, 0.28f, 1.0f };
-    GLfloat lightAmbient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
+    GLfloat lightDiffuse[] = { 0.42f, 0.42f, 0.40f, 1.0f };
+    GLfloat lightSpecular[] = { 0.12f, 0.12f, 0.10f, 1.0f };
+    GLfloat lightAmbient[] = { 0.03f, 0.03f, 0.03f, 1.0f };
 
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDirection);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
     glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
 
-    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 70.0f);
-    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 6.0f);
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 180.0f);
 
     glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.95f);
-    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.09f);
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.010f);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.08f);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.008f);
 }
 
 void Renderer::drawFloor(const Maze& maze) const
@@ -221,19 +227,34 @@ void Renderer::drawBottomFace(float x0, float x1, float z0, float z1) const
 
 void Renderer::setFloorColor() const
 {
-    glColor3f(0.68f, 0.58f, 0.46f);
+    glColor3f(0.90f, 0.65f, 0.35f);
 }
 
 void Renderer::setCeilingColor() const
 {
-    glColor3f(0.70f, 0.83f, 0.92f);
+    glColor3f(0.85f, 0.87f, 0.92f);
 }
 
 void Renderer::setWallColor(char type) const
 {
-    if (type == '1') glColor3f(0.82f, 0.82f, 0.86f);
-    else if (type == '2') glColor3f(0.35f, 0.60f, 0.90f);
-    else if (type == '3') glColor3f(0.48f, 0.80f, 0.45f);
-    else if (type == '4') glColor3f(0.90f, 0.62f, 0.28f);
-    else glColor3f(0.75f, 0.75f, 0.75f);
+    if (type == '1')
+    {
+        glColor3f(0.82f, 0.82f, 0.86f); //светло-серый
+    }
+    else if (type == '2')
+    {
+        glColor3f(0.35f, 0.60f, 0.90f); //голубовато-синий
+    }
+    else if (type == '3')
+    {
+        glColor3f(0.48f, 0.80f, 0.45f); //светло-зелёный
+    }
+    else if (type == '4')
+    {
+        glColor3f(0.90f, 0.62f, 0.28f); //оранжевый
+    }
+    else
+    {
+        glColor3f(0.75f, 0.75f, 0.75f); //серый
+    }
 }

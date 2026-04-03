@@ -12,7 +12,7 @@ public:
 
 private:
     void beginScene(const Player& player) const;
-    void setupLight() const;
+    void setupLight(const Player& player) const;
 
     void drawFloor(const Maze& maze) const;
     void drawCeiling(const Maze& maze) const;

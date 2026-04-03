@@ -22,7 +22,7 @@ private:
     bool createWindow();
     void setupWindow();
     void initScene();
-    void loop();
+    void runLoop();
     void updateTime();
     void handleInput();
     void renderFrame() const;
