@@ -36,7 +36,8 @@ void Renderer::setProjection(int width, int height) const
     float farPlane = 80.0f;
     float fov = 70.0f;
 
-    float top = std::tan(fov * PI / 360.0f) * nearPlane;
+    // здесь на самом деле tan(fov / 2) просто при переводе на радианы будет такая формула у угла
+    float top = std::tan(fov * PI / 360.0f) * nearPlane; 
     float bottom = -top;
     float right = top * aspect;
     float left = -right;
@@ -52,7 +53,7 @@ void Renderer::drawScene(const Maze& maze, const Player& player) const
 {
     beginScene(player);
     drawFloor(maze);
-    //drawCeiling(maze);
+    drawCeiling(maze);
     drawWalls(maze);
 }
 
@@ -162,12 +163,12 @@ void Renderer::drawWallCube(int x, int z, char type) const
     setWallColor(type);
 
     glBegin(GL_QUADS);
-    drawFrontFace(x0, x1, z1);
-    drawBackFace(x0, x1, z0);
-    drawLeftFace(x0, z0, z1);
-    drawRightFace(x1, z0, z1);
-    drawTopFace(x0, x1, z0, z1);
-    drawBottomFace(x0, x1, z0, z1);
+        drawFrontFace(x0, x1, z1);
+        drawBackFace(x0, x1, z0);       
+        drawLeftFace(x0, z0, z1);
+        drawRightFace(x1, z0, z1);
+        drawTopFace(x0, x1, z0, z1);
+        drawBottomFace(x0, x1, z0, z1);
     glEnd();
 }
 

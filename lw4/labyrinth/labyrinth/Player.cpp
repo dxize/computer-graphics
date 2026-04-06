@@ -57,7 +57,7 @@ void Player::moveForward(const Maze& maze, float dt)
 {
     float step = MOVE_SPEED * dt;
     float dx = -std::sin(angle) * step;
-    float dz = -std::cos(angle) * step;
+    float dz = -std::cos(angle) * step; 
     moveWithCollision(maze, dx, dz);
 }
 
