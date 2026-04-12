@@ -7,7 +7,6 @@
 
 #include <GLFW/glfw3.h>
 #include <cmath>
-#include <stdexcept>
 
 void Renderer::initOpenGL()
 {
@@ -26,6 +25,7 @@ void Renderer::initOpenGL()
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
     glClearColor(0.04f, 0.05f, 0.08f, 1.0f);
+
     setupFog();
     loadTextures();
 }
@@ -62,14 +62,19 @@ void Renderer::setProjection(int width, int height) const
 void Renderer::drawScene(const Maze& maze, const Player& player) const
 {
     beginScene(player);
-    drawSkybox(player);
+    drawSkySphere(player);
     setupLight(player);
     drawFloor(maze);
-    drawCeiling(maze);
     drawWalls(maze);
 }
 
 void Renderer::loadTextures()
+{
+    loadWallTextures();
+    loadEnvironmentTextures();
+}
+
+void Renderer::loadWallTextures()
 {
     wallTextures[0] = TextureLoader::loadPPMTexture("assets/wall1.ppm", GL_REPEAT);
     wallTextures[1] = TextureLoader::loadPPMTexture("assets/wall2.ppm", GL_REPEAT);
@@ -77,17 +82,18 @@ void Renderer::loadTextures()
     wallTextures[3] = TextureLoader::loadPPMTexture("assets/wall4.ppm", GL_REPEAT);
     wallTextures[4] = TextureLoader::loadPPMTexture("assets/wall5.ppm", GL_REPEAT);
     wallTextures[5] = TextureLoader::loadPPMTexture("assets/wall6.ppm", GL_REPEAT);
+}
 
+void Renderer::loadEnvironmentTextures()
+{
     floorTexture = TextureLoader::loadPPMTexture("assets/floor.ppm", GL_REPEAT);
-    ceilingTexture = TextureLoader::loadPPMTexture("assets/ceiling.ppm", GL_REPEAT);
-    skyTexture = TextureLoader::loadPPMTexture("assets/sky.ppm", GL_CLAMP);
+    skyTexture = TextureLoader::loadPPMTexture("assets/sky.ppm", GL_REPEAT);
 }
 
 void Renderer::deleteTextures()
 {
     glDeleteTextures(static_cast<GLsizei>(wallTextures.size()), wallTextures.data());
     glDeleteTextures(1, &floorTexture);
-    glDeleteTextures(1, &ceilingTexture);
     glDeleteTextures(1, &skyTexture);
 
     wallTextures.fill(0);
@@ -106,7 +112,7 @@ void Renderer::beginScene(const Player& player) const
     glTranslatef(-player.getX(), -PLAYER_HEIGHT, -player.getZ());
 }
 
-void Renderer::setupLight(const Player& player) const
+void Renderer::setupLight(const Player& player) const   
 {
     GLfloat lightPosition[] =
     {
@@ -131,17 +137,35 @@ void Renderer::setupLight(const Player& player) const
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.008f);
 }
 
-void Renderer::setupFog() const 
+void Renderer::setupFog() const
 {
-    GLfloat fogColor[] = { 0.72f, 0.74f, 0.78f, 1.0f };
-    glEnable(GL_FOG); 
+    GLfloat fogColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+    glEnable(GL_FOG);
     glFogi(GL_FOG_MODE, GL_EXP2);
-    glFogfv(GL_FOG_COLOR, fogColor); 
-    glFogf(GL_FOG_DENSITY, 0.40f);
-    glHint(GL_FOG_HINT, GL_NICEST);
+    glFogfv(GL_FOG_COLOR, fogColor);
+    glFogf(GL_FOG_DENSITY, 0.20f);
 }
 
-void Renderer::drawSkybox(const Player& player) const
+void Renderer::drawSkySphere(const Player& player) const
+{
+    beginSkyRendering();
+
+    glPushMatrix();
+    glTranslatef(player.getX(), PLAYER_HEIGHT, player.getZ());
+
+    const float radius = 25.0f;
+    const int stacks = 24;
+    const int slices = 48;
+
+    drawSkySphereBands(radius, stacks, slices);
+
+    glPopMatrix();
+
+    endSkyRendering();
+}
+
+void Renderer::beginSkyRendering() const
 {
     glPushAttrib(GL_ENABLE_BIT | GL_DEPTH_BUFFER_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_LIGHTING_BIT);
 
@@ -150,46 +174,57 @@ void Renderer::drawSkybox(const Player& player) const
     glDepthMask(GL_FALSE);
     bindTexture(skyTexture);
     glColor3f(1.0f, 1.0f, 1.0f);
+}
 
-    glPushMatrix();
-    glTranslatef(player.getX(), PLAYER_HEIGHT, player.getZ());
-
-    const float s = SKYBOX_SIZE;
-
-    glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-s, -s,  s);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( s, -s,  s);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( s,  s,  s);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-s,  s,  s);
-
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( s, -s, -s);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-s, -s, -s);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-s,  s, -s);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( s,  s, -s);
-
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-s, -s, -s);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-s, -s,  s);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-s,  s,  s);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-s,  s, -s);
-
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( s, -s,  s);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( s, -s, -s);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( s,  s, -s);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( s,  s,  s);
-
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-s,  s, -s);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( s,  s, -s);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( s,  s,  s);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-s,  s,  s);
-
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-s, -s,  s);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( s, -s,  s);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( s, -s, -s);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-s, -s, -s);
-    glEnd();
-
-    glPopMatrix();
+void Renderer::endSkyRendering() const
+{
     glPopAttrib();
+}
+
+void Renderer::drawSkySphereBands(float radius, int stacks, int slices) const
+{
+    for (int i = 0; i < stacks; ++i)
+    {
+        drawSkyBand(radius, i, stacks, slices);
+    }
+}
+
+void Renderer::drawSkyBand(float radius, int stackIndex, int stacks, int slices) const
+{
+    float phi0 = PI * (-0.5f + static_cast<float>(stackIndex) / static_cast<float>(stacks));
+    float phi1 = PI * (-0.5f + static_cast<float>(stackIndex + 1) / static_cast<float>(stacks));
+
+    float y0 = radius * std::sin(phi0);
+    float y1 = radius * std::sin(phi1);
+
+    float r0 = radius * std::cos(phi0);
+    float r1 = radius * std::cos(phi1);
+
+    float v0 = 1.0f - static_cast<float>(stackIndex) / static_cast<float>(stacks);
+    float v1 = 1.0f - static_cast<float>(stackIndex + 1) / static_cast<float>(stacks);
+
+    glBegin(GL_QUAD_STRIP);
+
+    for (int j = 0; j <= slices; ++j)
+    {
+        float theta = 2.0f * PI * static_cast<float>(j) / static_cast<float>(slices);
+
+        float x0 = r0 * std::cos(theta);
+        float z0 = r0 * std::sin(theta);
+
+        float x1 = r1 * std::cos(theta);
+        float z1 = r1 * std::sin(theta);
+
+        float u = 1.0f - static_cast<float>(j) / static_cast<float>(slices);
+
+        glTexCoord2f(u, v0);
+        glVertex3f(x0, y0, z0);
+
+        glTexCoord2f(u, v1);
+        glVertex3f(x1, y1, z1);
+    }
+
+    glEnd();
 }
 
 void Renderer::drawFloor(const Maze& maze) const
@@ -203,25 +238,6 @@ void Renderer::drawFloor(const Maze& maze) const
         for (int x = 0; x < maze.getSize(); ++x)
         {
             drawFloorTile(x, z);
-        }
-    }
-    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-}
-
-void Renderer::drawCeiling(const Maze& maze) const
-{
-    bindTexture(ceilingTexture);
-    glColor3f(1.0f, 1.0f, 1.0f);
-
-    glBegin(GL_QUADS);
-    for (int z = 0; z < maze.getSize(); ++z)
-    {
-        for (int x = 0; x < maze.getSize(); ++x)
-        {
-            drawCeilingTile(x, z);
         }
     }
     glEnd();
@@ -266,7 +282,6 @@ void Renderer::drawWallCube(int x, int z, char type) const
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
-
 }
 
 void Renderer::drawFloorTile(int x, int z) const
@@ -277,24 +292,18 @@ void Renderer::drawFloorTile(int x, int z) const
     float z1 = static_cast<float>(z) + 1.0f;
 
     glNormal3f(0.0f, 1.0f, 0.0f);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x0, 0.0f, z0);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x1, 0.0f, z0);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x1, 0.0f, z1);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x0, 0.0f, z1);
-}
 
-void Renderer::drawCeilingTile(int x, int z) const
-{
-    float x0 = static_cast<float>(x);
-    float x1 = static_cast<float>(x) + 1.0f;
-    float z0 = static_cast<float>(z);
-    float z1 = static_cast<float>(z) + 1.0f;
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(x0, 0.0f, z0);
 
-    glNormal3f(0.0f, -1.0f, 0.0f);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z1);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z1);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x1, WALL_HEIGHT, z0);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x0, WALL_HEIGHT, z0);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(x1, 0.0f, z0);
+
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(x1, 0.0f, z1);
+
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(x0, 0.0f, z1);
 }
 
 void Renderer::drawFrontFace(float x0, float x1, float z1) const

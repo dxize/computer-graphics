@@ -35,7 +35,7 @@ bool Application::createWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    window = glfwCreateWindow(width, height, "3D Labyrinth", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "Maze", nullptr, nullptr);
     return window != nullptr;
 }
 

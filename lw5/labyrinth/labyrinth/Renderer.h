@@ -17,20 +17,25 @@ public:
 
 private:
     void loadTextures();
+    void loadWallTextures();
+    void loadEnvironmentTextures();
     void deleteTextures();
+
+    void beginSkyRendering() const;
+    void endSkyRendering() const;
+    void drawSkySphereBands(float radius, int stacks, int slices) const;
+    void drawSkyBand(float radius, int stackIndex, int stacks, int slices) const;
 
     void beginScene(const Player& player) const;
     void setupLight(const Player& player) const;
     void setupFog() const;
 
-    void drawSkybox(const Player& player) const;
+    void drawSkySphere(const Player& player) const;
     void drawFloor(const Maze& maze) const;
-    void drawCeiling(const Maze& maze) const;
     void drawWalls(const Maze& maze) const;
     void drawWallCube(int x, int z, char type) const;
 
     void drawFloorTile(int x, int z) const;
-    void drawCeilingTile(int x, int z) const;
 
     void drawFrontFace(float x0, float x1, float z1) const;
     void drawBackFace(float x0, float x1, float z0) const;

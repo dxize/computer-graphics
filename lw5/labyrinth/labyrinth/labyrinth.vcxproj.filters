@@ -14,33 +14,76 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp"><Filter>Исходные файлы</Filter></ClCompile>
-    <ClCompile Include="InputHandler.cpp"><Filter>Исходные файлы</Filter></ClCompile>
-    <ClCompile Include="main.cpp"><Filter>Исходные файлы</Filter></ClCompile>
-    <ClCompile Include="Maze.cpp"><Filter>Исходные файлы</Filter></ClCompile>
-    <ClCompile Include="Player.cpp"><Filter>Исходные файлы</Filter></ClCompile>
-    <ClCompile Include="Renderer.cpp"><Filter>Исходные файлы</Filter></ClCompile>
-    <ClCompile Include="TextureLoader.cpp"><Filter>Исходные файлы</Filter></ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h"><Filter>Файлы заголовков</Filter></ClInclude>
-    <ClInclude Include="Config.h"><Filter>Файлы заголовков</Filter></ClInclude>
-    <ClInclude Include="InputHandler.h"><Filter>Файлы заголовков</Filter></ClInclude>
-    <ClInclude Include="Maze.h"><Filter>Файлы заголовков</Filter></ClInclude>
-    <ClInclude Include="Player.h"><Filter>Файлы заголовков</Filter></ClInclude>
-    <ClInclude Include="Renderer.h"><Filter>Файлы заголовков</Filter></ClInclude>
-    <ClInclude Include="TextureLoader.h"><Filter>Файлы заголовков</Filter></ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Maze.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\ceiling.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\floor.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\sky.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\wall1.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\wall2.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\wall3.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\wall4.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\wall5.ppm"><Filter>Ресурсы</Filter></None>
-    <None Include="assets\wall6.ppm"><Filter>Ресурсы</Filter></None>
+    <None Include="assets\floor.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
+    <None Include="assets\sky.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
+    <None Include="assets\wall1.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
+    <None Include="assets\wall2.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
+    <None Include="assets\wall3.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
+    <None Include="assets\wall4.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
+    <None Include="assets\wall5.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
+    <None Include="assets\wall6.ppm">
+      <Filter>Ресурсы</Filter>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

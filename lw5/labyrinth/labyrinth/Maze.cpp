@@ -12,7 +12,7 @@ Maze::Maze()
     cells[3]  = "1020203030502041";
     cells[4]  = "1026203030202001";
     cells[5]  = "1020203030202561";
-    cells[6]  = "1020000030200201";
+    cells[6]  = "1020000030200200";
     cells[7]  = "1062222030220201";
     cells[8]  = "1000002000020501";
     cells[9]  = "1222502222020201";
@@ -27,7 +27,7 @@ Maze::Maze()
 bool Maze::isWall(int x, int z) const
 {
     if (!isInside(x, z))
-        return true;
+        return false;
 
     return cells[z][x] != '0';
 }
