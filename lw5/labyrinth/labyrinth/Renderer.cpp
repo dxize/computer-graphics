@@ -205,24 +205,24 @@ void Renderer::drawSkyBand(float radius, int stackIndex, int stacks, int slices)
 
     glBegin(GL_QUAD_STRIP);
 
-    for (int j = 0; j <= slices; ++j)
-    {
-        float theta = 2.0f * PI * static_cast<float>(j) / static_cast<float>(slices);
+        for (int j = 0; j <= slices; ++j)
+        {
+            float theta = 2.0f * PI * static_cast<float>(j) / static_cast<float>(slices);
 
-        float x0 = r0 * std::cos(theta);
-        float z0 = r0 * std::sin(theta);
+            float x0 = r0 * std::cos(theta);
+            float z0 = r0 * std::sin(theta);
 
-        float x1 = r1 * std::cos(theta);
-        float z1 = r1 * std::sin(theta);
+            float x1 = r1 * std::cos(theta);
+            float z1 = r1 * std::sin(theta);
 
-        float u = 1.0f - static_cast<float>(j) / static_cast<float>(slices);
+            float u = 1.0f - static_cast<float>(j) / static_cast<float>(slices);
 
-        glTexCoord2f(u, v0);
-        glVertex3f(x0, y0, z0);
+            glTexCoord2f(u, v0);
+            glVertex3f(x0, y0, z0);
 
-        glTexCoord2f(u, v1);
-        glVertex3f(x1, y1, z1);
-    }
+            glTexCoord2f(u, v1);
+            glVertex3f(x1, y1, z1);
+        }
 
     glEnd();
 }
@@ -370,7 +370,7 @@ void Renderer::bindTexture(GLuint texture) const
 {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 GLuint Renderer::getWallTexture(char type) const

@@ -100,7 +100,7 @@ namespace
     {
         GLuint texture = 0;
         glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, texture);  
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -109,7 +109,7 @@ namespace
 
         glTexImage2D(
             GL_TEXTURE_2D,          // это 2D текстура
-            0,                      // основной уровень
+            0,                      // основной уровень 
             GL_RGB,                 // хранить как RGB
             data.width,             // ширина
             data.height,            // высота
