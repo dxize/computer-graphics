@@ -1,9 +1,16 @@
 #include "ChessScene.h"
 
 #include <GLFW/glfw3.h>
-
 #include <cmath>
-#include <string>
+
+const float BoardMin = -4.0f;
+const float SquareSize = 1.0f;
+
+const float WhiteRotationY = 90.0f;
+const float BlackRotationY = 270.0f;
+
+const float DesiredKingHeight = 1.25f;
+const float Pi = 3.1415926535f;
 
 bool ChessScene::Load()
 {
@@ -14,17 +21,26 @@ bool ChessScene::Load()
 
     if (m_king.GetHeight() > 0.0001f)
     {
-        m_pieceScale = 1.25f / m_king.GetHeight();
+        m_pieceScale = DesiredKingHeight / m_king.GetHeight();
     }
 
-    ArrangePieces();
+    Restart();
 
     return true;
 }
 
 void ChessScene::Restart()
 {
-    ArrangePieces();
+    m_pieces.clear();
+
+    m_animationTime = 0.0f;
+
+    m_whiteF2Pawn = -1;
+    m_whiteG2Pawn = -1;
+    m_blackE7Pawn = -1;
+    m_blackQueen = -1;
+
+    CreatePieces();
 }
 
 void ChessScene::Update(float deltaTime)
@@ -40,126 +56,83 @@ void ChessScene::Draw() const
 
 bool ChessScene::LoadModels()
 {
-    const std::string basePath = "assets/models/";
-
-    bool result = true;
-
-    result = result && m_loader.Load(basePath + "king.obj", m_king);
-    result = result && m_loader.Load(basePath + "queen.obj", m_queen);
-    result = result && m_loader.Load(basePath + "rook.obj", m_rook);
-    result = result && m_loader.Load(basePath + "bishop.obj", m_bishop);
-    result = result && m_loader.Load(basePath + "knight.obj", m_knight);
-    result = result && m_loader.Load(basePath + "pawn.obj", m_pawn);
-
-    return result;
+    return
+        LoadModel("king.obj", m_king) &&
+        LoadModel("queen.obj", m_queen) &&
+        LoadModel("rook.obj", m_rook) &&
+        LoadModel("bishop.obj", m_bishop) &&
+        LoadModel("knight.obj", m_knight) &&
+        LoadModel("pawn.obj", m_pawn);
 }
 
-void ChessScene::ArrangePieces()
+bool ChessScene::LoadModel(const std::string& fileName, Model& model)
 {
-    m_pieces.clear();
-    m_pieceRotations.clear();
-    m_moves.clear();
+    return m_loader.Load("assets/models/" + fileName, model);
+}
 
-    ResetAnimation();
+void ChessScene::CreatePieces()
+{
+    const Model* backRank[8] =
+    {
+        &m_rook,
+        &m_knight,
+        &m_bishop,
+        &m_queen,
+        &m_king,
+        &m_bishop,
+        &m_knight,
+        &m_rook
+    };
 
-    /*
-        Поворот фигур.
+    CreateWhitePieces(backRank);
+    CreateBlackPieces(backRank);
+}
 
-        Если модели повернуты на 90 градусов не туда,
-        эти две константы исправляют направление.
-
-        Белые и чёрные должны смотреть друг на друга,
-        поэтому разница между ними = 180 градусов.
-    */
-    const float whiteRotation = 270.0f;
-    const float blackRotation = 90.0f;
-
-    int whiteF2Pawn = -1;
-    int whiteG2Pawn = -1;
-    int whiteKing = -1;
-
-    int blackE7Pawn = -1;
-    int blackQueen = -1;
-
-    // Белые основные фигуры
-    AddPiece(m_rook, 0, 0, true, whiteRotation);
-    AddPiece(m_knight, 1, 0, true, whiteRotation);
-    AddPiece(m_bishop, 2, 0, true, whiteRotation);
-    AddPiece(m_queen, 3, 0, true, whiteRotation);
-
-    whiteKing = AddPiece(m_king, 4, 0, true, whiteRotation);
-    m_matedKingIndex = whiteKing;
-
-    AddPiece(m_bishop, 5, 0, true, whiteRotation);
-    AddPiece(m_knight, 6, 0, true, whiteRotation);
-    AddPiece(m_rook, 7, 0, true, whiteRotation);
-
-    // Белые пешки
+void ChessScene::CreateWhitePieces(const Model* backRank[8])
+{
     for (int file = 0; file < 8; ++file)
     {
-        int index = AddPiece(m_pawn, file, 1, true, whiteRotation);
+        AddPiece(*backRank[file], file, 0, true);
+
+        int pawnIndex = AddPiece(m_pawn, file, 1, true);
 
         if (file == 5)
         {
-            whiteF2Pawn = index;
+            m_whiteF2Pawn = pawnIndex;
         }
 
         if (file == 6)
         {
-            whiteG2Pawn = index;
+            m_whiteG2Pawn = pawnIndex;
         }
     }
+}
 
-    // Чёрные основные фигуры
-    AddPiece(m_rook, 0, 7, false, blackRotation);
-    AddPiece(m_knight, 1, 7, false, blackRotation);
-    AddPiece(m_bishop, 2, 7, false, blackRotation);
-
-    blackQueen = AddPiece(m_queen, 3, 7, false, blackRotation);
-
-    AddPiece(m_king, 4, 7, false, blackRotation);
-    AddPiece(m_bishop, 5, 7, false, blackRotation);
-    AddPiece(m_knight, 6, 7, false, blackRotation);
-    AddPiece(m_rook, 7, 7, false, blackRotation);
-
-    // Чёрные пешки
+void ChessScene::CreateBlackPieces(const Model* backRank[8])
+{
     for (int file = 0; file < 8; ++file)
     {
-        int index = AddPiece(m_pawn, file, 6, false, blackRotation);
+        int pawnIndex = AddPiece(m_pawn, file, 6, false);
 
         if (file == 4)
         {
-            blackE7Pawn = index;
+            m_blackE7Pawn = pawnIndex;
+        }
+
+        int pieceIndex = AddPiece(*backRank[file], file, 7, false);
+
+        if (file == 3)
+        {
+            m_blackQueen = pieceIndex;
         }
     }
-
-    /*
-        Анимация партии: мат дурака.
-
-        1. f2 -> f3
-        2. e7 -> e5
-        3. g2 -> g4
-        4. Qd8 -> h4#
-    */
-
-    AddMove(whiteF2Pawn, 5, 2, 1.0f);
-    AddMove(blackE7Pawn, 4, 4, 1.0f);
-    AddMove(whiteG2Pawn, 6, 3, 1.0f);
-    AddMove(blackQueen, 7, 3, 1.4f);
 }
 
-int ChessScene::AddPiece(
-    const Model& model,
-    int file,
-    int rank,
-    bool isWhite,
-    float rotationY
-)
+int ChessScene::AddPiece(const Model& model, int file, int rank, bool isWhite)
 {
-    Vec3 position = CalculateSquarePosition(file, rank);
+    Vec3 position = GetSquarePosition(file, rank);
 
     ChessPiece piece;
-
     piece.ModelPtr = &model;
     piece.File = file;
     piece.Rank = rank;
@@ -168,238 +141,161 @@ int ChessScene::AddPiece(
     piece.IsWhite = isWhite;
 
     m_pieces.push_back(piece);
-    m_pieceRotations.push_back(rotationY);
 
     return static_cast<int>(m_pieces.size()) - 1;
 }
 
-void ChessScene::AddMove(
+void ChessScene::UpdateAnimation(float deltaTime)
+{
+    m_animationTime += deltaTime;
+
+    // Анимация партии:
+    // 1. f3 e5
+    // 2. g4 Qh4#
+    AnimatePiece(m_whiteF2Pawn, 5, 1, 5, 2, 0.5f, 1.0f);
+    AnimatePiece(m_blackE7Pawn, 4, 6, 4, 4, 2.0f, 1.0f);
+    AnimatePiece(m_whiteG2Pawn, 6, 1, 6, 3, 3.5f, 1.0f);
+    AnimatePiece(m_blackQueen, 3, 7, 7, 3, 5.0f, 1.4f);
+}
+
+void ChessScene::AnimatePiece(
     int pieceIndex,
+    int fromFile,
+    int fromRank,
     int toFile,
     int toRank,
-    float duration
-)
+    float startTime,
+    float duration)
 {
     if (pieceIndex < 0)
     {
         return;
     }
 
-    ChessMove move;
+    ChessPiece& piece = m_pieces[pieceIndex];
 
-    move.PieceIndex = pieceIndex;
-    move.ToFile = toFile;
-    move.ToRank = toRank;
-    move.Duration = duration;
+    Vec3 start = GetSquarePosition(fromFile, fromRank);
+    Vec3 end = GetSquarePosition(toFile, toRank);
 
-    m_moves.push_back(move);
-}
-
-void ChessScene::ResetAnimation()
-{
-    m_currentMoveIndex = 0;
-
-    m_moveTime = 0.0f;
-    m_pauseTime = 0.4f;
-    m_victoryTime = 0.0f;
-
-    m_isAnimationFinished = false;
-}
-
-void ChessScene::UpdateAnimation(float deltaTime)
-{
-    if (m_isAnimationFinished)
+    if (m_animationTime < startTime)
     {
-        m_victoryTime += deltaTime;
+        piece.X = start.X;
+        piece.Z = start.Z;
+        piece.File = fromFile;
+        piece.Rank = fromRank;
         return;
     }
 
-    if (m_currentMoveIndex >= static_cast<int>(m_moves.size()))
+    if (m_animationTime > startTime + duration)
     {
-        m_isAnimationFinished = true;
+        piece.X = end.X;
+        piece.Z = end.Z;
+        piece.File = toFile;
+        piece.Rank = toRank;
         return;
     }
 
-    if (m_pauseTime > 0.0f)
-    {
-        m_pauseTime -= deltaTime;
-        return;
-    }
+    float t = (m_animationTime - startTime) / duration;
 
-    ChessMove& move = m_moves[m_currentMoveIndex];
-    ChessPiece& piece = m_pieces[move.PieceIndex];
+    // Плавное движение
+    float smooth = t * t * (3.0f - 2.0f * t);
 
-    if (m_moveTime == 0.0f)
-    {
-        Vec3 endPosition = CalculateSquarePosition(move.ToFile, move.ToRank);
-
-        move.StartX = piece.X;
-        move.StartZ = piece.Z;
-
-        move.EndX = endPosition.X;
-        move.EndZ = endPosition.Z;
-    }
-
-    m_moveTime += deltaTime;
-
-    float progress = m_moveTime / move.Duration;
-
-    if (progress > 1.0f)
-    {
-        progress = 1.0f;
-    }
-
-    float smoothProgress = CalculateSmoothStep(progress);
-
-    piece.X = CalculateLerp(move.StartX, move.EndX, smoothProgress);
-    piece.Z = CalculateLerp(move.StartZ, move.EndZ, smoothProgress);
-
-    if (progress >= 1.0f)
-    {
-        piece.File = move.ToFile;
-        piece.Rank = move.ToRank;
-
-        piece.X = move.EndX;
-        piece.Z = move.EndZ;
-
-        ++m_currentMoveIndex;
-
-        m_moveTime = 0.0f;
-        m_pauseTime = 0.45f;
-    }
+    piece.X = start.X + (end.X - start.X) * smooth;
+    piece.Z = start.Z + (end.Z - start.Z) * smooth;
 }
 
-Vec3 ChessScene::CalculateSquarePosition(int file, int rank) const
+Vec3 ChessScene::GetSquarePosition(int file, int rank) const
 {
-    return {
+    return
+    {
         -3.5f + static_cast<float>(file),
-        0.12f,
-        -3.5f + static_cast<float>(rank)
+        0.0f,
+        3.5f - static_cast<float>(rank)
     };
 }
 
 void ChessScene::DrawBoard() const
 {
-    const float boardY = 0.05f;
-    const float squareY = 0.08f;
-
-    // Рамка доски.
-    ApplyMaterial(0.34f, 0.33f, 0.30f, 0.03f, 8.0f);
+    // Основание доски
+    ApplyMaterial(0.32f, 0.30f, 0.26f, 0.05f, 8.0f);
 
     glBegin(GL_QUADS);
 
     glNormal3f(0.0f, 1.0f, 0.0f);
 
-    glVertex3f(-4.25f, boardY, -4.25f);
-    glVertex3f(4.25f, boardY, -4.25f);
-    glVertex3f(4.25f, boardY, 4.25f);
-    glVertex3f(-4.25f, boardY, 4.25f);
+    glVertex3f(-4.3f, 0.02f, -4.3f);
+    glVertex3f(4.3f, 0.02f, -4.3f);
+    glVertex3f(4.3f, 0.02f, 4.3f);
+    glVertex3f(-4.3f, 0.02f, 4.3f);
 
     glEnd();
 
+    // Клетки
     for (int rank = 0; rank < 8; ++rank)
     {
         for (int file = 0; file < 8; ++file)
         {
-            bool isLight = (file + rank) % 2 == 0;
+            bool isLight = ((file + rank) % 2) == 0;
 
             if (isLight)
             {
-                // Светлая клетка под цвет белых фигур.
-                ApplyMaterial(1.00f, 1.00f, 0.94f, 0.08f, 8.0f);
+                ApplyMaterial(0.95f, 0.90f, 0.78f, 0.08f, 10.0f);
             }
             else
             {
-                // Тёмная клетка под цвет чёрных фигур.
-                ApplyMaterial(0.28f, 0.28f, 0.28f, 0.20f, 25.0f);
+                ApplyMaterial(0.20f, 0.20f, 0.20f, 0.25f, 25.0f);
             }
 
-            float x0 = -4.0f + static_cast<float>(file);
-            float x1 = x0 + 1.0f;
+            float x0 = BoardMin + file * SquareSize;
+            float x1 = x0 + SquareSize;
 
-            float z0 = -4.0f + static_cast<float>(rank);
-            float z1 = z0 + 1.0f;
+            float z0 = BoardMin + rank * SquareSize;
+            float z1 = z0 + SquareSize;
 
             glBegin(GL_QUADS);
 
             glNormal3f(0.0f, 1.0f, 0.0f);
 
-            glVertex3f(x0, squareY, z0);
-            glVertex3f(x1, squareY, z0);
-            glVertex3f(x1, squareY, z1);
-            glVertex3f(x0, squareY, z1);
+            glVertex3f(x0, 0.06f, z0);
+            glVertex3f(x1, 0.06f, z0);
+            glVertex3f(x1, 0.06f, z1);
+            glVertex3f(x0, 0.06f, z1);
 
             glEnd();
         }
     }
 }
+
 void ChessScene::DrawPieces() const
 {
     for (int i = 0; i < static_cast<int>(m_pieces.size()); ++i)
     {
-        const ChessPiece& piece = m_pieces[i];
-
-        if (piece.ModelPtr == nullptr)
-        {
-            continue;
-        }
-
-        bool isMatedKing =
-            m_isAnimationFinished &&
-            i == m_matedKingIndex;
-
-        if (isMatedKing)
-        {
-            // Белый король после мата слегка выделяется тёплым цветом.
-            ApplyMaterial(0.95f, 0.62f, 0.45f, 0.08f, 12.0f);
-        }
-        else if (piece.IsWhite)
-        {
-            ApplyMaterial(0.82f, 0.80f, 0.72f, 0.05f, 10.0f);
-        }
-        else
-        {
-            ApplyMaterial(0.18f, 0.18f, 0.18f, 0.20f, 25.0f);
-        }
-
-        float y = 0.14f;
-        float scale = m_pieceScale;
-        float rotationY = m_pieceRotations[i];
-
-        bool isCurrentMovingPiece =
-            !m_isAnimationFinished &&
-            m_currentMoveIndex < static_cast<int>(m_moves.size()) &&
-            m_moves[m_currentMoveIndex].PieceIndex == i;
-
-        if (isCurrentMovingPiece)
-        {
-            float progress = m_moveTime / m_moves[m_currentMoveIndex].Duration;
-
-            if (progress > 1.0f)
-            {
-                progress = 1.0f;
-            }
-
-            y += std::sin(progress * 3.1415926535f) * 0.25f;
-        }
-
-        if (isMatedKing)
-        {
-            // При мате трясётся именно белый король.
-            y += std::sin(m_victoryTime * 18.0f) * 0.05f;
-            rotationY += std::sin(m_victoryTime * 22.0f) * 8.0f;
-            scale *= 1.0f + std::sin(m_victoryTime * 10.0f) * 0.03f;
-        }
-
-        DrawModel(
-            *piece.ModelPtr,
-            piece.X,
-            y,
-            piece.Z,
-            scale,
-            rotationY
-        );
+        DrawPiece(i);
     }
+}
+
+void ChessScene::DrawPiece(int index) const
+{
+    const ChessPiece& piece = m_pieces[index];
+
+    if (piece.ModelPtr == nullptr)
+    {
+        return;
+    }
+
+    ApplyPieceMaterial(piece);
+
+    float y = 0.10f + GetJumpHeight(index);
+    float rotationY = piece.IsWhite ? WhiteRotationY : BlackRotationY;
+
+    DrawModel(
+        *piece.ModelPtr,
+        piece.X,
+        y,
+        piece.Z,
+        m_pieceScale,
+        rotationY
+    );
 }
 
 void ChessScene::DrawModel(
@@ -408,8 +304,7 @@ void ChessScene::DrawModel(
     float y,
     float z,
     float scale,
-    float rotationY
-) const
+    float rotationY) const
 {
     Vec3 center = model.GetCenter();
     Vec3 min = model.GetMin();
@@ -420,16 +315,78 @@ void ChessScene::DrawModel(
     glRotatef(rotationY, 0.0f, 1.0f, 0.0f);
     glScalef(scale, scale, scale);
 
-    /*
-        Исправление локальных координат модели:
-        - центр модели ставим в центр клетки;
-        - нижнюю точку модели ставим на доску.
-    */
+    // Центруем модель и ставим её нижней частью на доску
     glTranslatef(-center.X, -min.Y, -center.Z);
 
-    model.Draw(false);
+    model.Draw();
 
     glPopMatrix();
+}
+
+float ChessScene::GetJumpHeight(int pieceIndex) const
+{
+    float t = 0.0f;
+
+    if (pieceIndex == m_whiteF2Pawn && GetMoveProgress(0.5f, 1.0f, t))
+    {
+        return std::sin(t * Pi) * 0.22f;
+    }
+
+    if (pieceIndex == m_blackE7Pawn && GetMoveProgress(2.0f, 1.0f, t))
+    {
+        return std::sin(t * Pi) * 0.22f;
+    }
+
+    if (pieceIndex == m_whiteG2Pawn && GetMoveProgress(3.5f, 1.0f, t))
+    {
+        return std::sin(t * Pi) * 0.22f;
+    }
+
+    if (pieceIndex == m_blackQueen && GetMoveProgress(5.0f, 1.4f, t))
+    {
+        return std::sin(t * Pi) * 0.22f;
+    }
+
+    return 0.0f;
+}
+
+bool ChessScene::GetMoveProgress(float startTime, float duration, float& progress) const
+{
+    if (m_animationTime < startTime)
+    {
+        return false;
+    }
+
+    if (m_animationTime > startTime + duration)
+    {
+        return false;
+    }
+
+    progress = (m_animationTime - startTime) / duration;
+
+    if (progress < 0.0f)
+    {
+        progress = 0.0f;
+    }
+
+    if (progress > 1.0f)
+    {
+        progress = 1.0f;
+    }
+
+    return true;
+}
+
+void ChessScene::ApplyPieceMaterial(const ChessPiece& piece) const
+{
+    if (piece.IsWhite)
+    {
+        ApplyMaterial(0.85f, 0.82f, 0.70f, 0.08f, 12.0f);
+    }
+    else
+    {
+        ApplyMaterial(0.12f, 0.12f, 0.12f, 0.30f, 35.0f);
+    }
 }
 
 void ChessScene::ApplyMaterial(
@@ -437,14 +394,13 @@ void ChessScene::ApplyMaterial(
     float green,
     float blue,
     float specular,
-    float shininess
-) const
+    float shininess) const
 {
     float ambient[] =
     {
-        red * 0.60f,
-        green * 0.60f,
-        blue * 0.60f,
+        red * 0.5f,
+        green * 0.5f,
+        blue * 0.5f,
         1.0f
     };
 
@@ -468,14 +424,4 @@ void ChessScene::ApplyMaterial(
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specularColor);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-}
-
-float ChessScene::CalculateLerp(float from, float to, float t) const
-{
-    return from + (to - from) * t;
-}
-
-float ChessScene::CalculateSmoothStep(float value) const
-{
-    return value * value * (3.0f - 2.0f * value);
 }

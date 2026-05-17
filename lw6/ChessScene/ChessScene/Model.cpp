@@ -3,14 +3,12 @@
 #include <GLFW/glfw3.h>
 
 #include <algorithm>
-#include <iostream>
 
 void Model::Clear()
 {
     m_vertices.clear();
     m_normals.clear();
     m_triangles.clear();
-    m_materials.clear();
 
     m_min = {};
     m_max = {};
@@ -33,64 +31,21 @@ void Model::AddTriangle(const Triangle& triangle)
     m_triangles.push_back(triangle);
 }
 
-void Model::AddMaterial(const Material& material)
-{
-    m_materials.push_back(material);
-}
-
-int Model::FindMaterialIndex(const std::string& materialName) const
-{
-    for (int i = 0; i < static_cast<int>(m_materials.size()); ++i)
-    {
-        if (m_materials[i].Name == materialName)
-        {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-void Model::Draw(bool useModelMaterials) const
+void Model::Draw() const
 {
     if (m_triangles.empty())
     {
         return;
     }
 
-    bool isDrawing = false;
-    int lastMaterialIndex = -999;
+    glBegin(GL_TRIANGLES);
 
-    for (const Triangle& triangle : m_triangles)
-    {
-        bool needChangeMaterial =
-            useModelMaterials &&
-            triangle.MaterialIndex != lastMaterialIndex;
-
-        if (!isDrawing || needChangeMaterial)
+        for (const Triangle& triangle : m_triangles)
         {
-            if (isDrawing)
-            {
-                glEnd();
-            }
-
-            if (useModelMaterials)
-            {
-                ApplyMaterialByIndex(triangle.MaterialIndex);
-                lastMaterialIndex = triangle.MaterialIndex;
-            }
-
-            glBegin(GL_TRIANGLES);
-            isDrawing = true;
+            DrawTriangle(triangle);
         }
 
-        DrawTriangle(triangle);
-    }
-
-    if (isDrawing)
-    {
-        glEnd();
-    }
+    glEnd();
 }
 
 Vec3 Model::GetCenter() const
@@ -182,19 +137,4 @@ Vec3 Model::CalculateFaceNormal(const Triangle& triangle) const
     Vec3 ac = Subtract(c, a);
 
     return Normalize(Cross(ab, ac));
-}
-
-void Model::ApplyMaterialByIndex(int materialIndex) const
-{
-    if (
-        materialIndex >= 0 &&
-        materialIndex < static_cast<int>(m_materials.size())
-        )
-    {
-        m_materials[materialIndex].Apply();
-        return;
-    }
-
-    static Material defaultMaterial;
-    defaultMaterial.Apply();
 }

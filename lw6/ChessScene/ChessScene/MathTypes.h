@@ -18,7 +18,7 @@ inline Vec3 Subtract(const Vec3& left, const Vec3& right)
     };
 }
 
-inline Vec3 Cross(const Vec3& left, const Vec3& right)
+inline Vec3 Cross(const Vec3& left, const Vec3& right) //вектроное произведение это опредлеитель матрицы
 {
     return {
         left.Y * right.Z - left.Z * right.Y,
