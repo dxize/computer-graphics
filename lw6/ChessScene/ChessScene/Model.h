@@ -1,8 +1,13 @@
 #pragma once
 
-#include "MathTypes.h"
-
 #include <vector>
+
+struct Vec3
+{
+    float X = 0.0f;
+    float Y = 0.0f;
+    float Z = 0.0f;
+};
 
 struct VertexReference
 {
@@ -28,10 +33,7 @@ public:
 
     Vec3 GetCenter() const;
     Vec3 GetMin() const;
-    Vec3 GetMax() const;
 
-    float GetWidthX() const;
-    float GetWidthZ() const;
     float GetHeight() const;
 
 private:

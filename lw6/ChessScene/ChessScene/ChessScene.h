@@ -2,7 +2,6 @@
 
 #include "Model.h"
 #include "ObjLoader.h"
-#include "MathTypes.h"
 
 #include <string>
 #include <vector>
@@ -32,11 +31,12 @@ private:
     bool LoadModels();
     bool LoadModel(const std::string& fileName, Model& model);
 
-    int AddPiece(const Model& model, int file, int rank, bool isWhite);
-
     void CreatePieces();
     void CreateWhitePieces(const Model* backRank[8]);
     void CreateBlackPieces(const Model* backRank[8]);
+
+    int AddPiece(const Model& model, int file, int rank, bool isWhite);
+
     void UpdateAnimation(float deltaTime);
 
     void AnimatePiece(
@@ -52,6 +52,14 @@ private:
     Vec3 GetSquarePosition(int file, int rank) const;
 
     void DrawBoard() const;
+    void DrawBoardBase() const;
+    void DrawBoardSquares() const;
+    void DrawBoardSquare(int file, int rank) const;
+
+    bool IsLightSquare(int file, int rank) const;
+    void ApplyBoardSquareMaterial(bool isLight) const;
+    void DrawFlatSquare(float x0, float x1, float z0, float z1) const;
+
     void DrawPieces() const;
     void DrawPiece(int index) const;
 
@@ -68,6 +76,7 @@ private:
     bool GetMoveProgress(float startTime, float duration, float& progress) const;
 
     void ApplyPieceMaterial(const ChessPiece& piece) const;
+
     void ApplyMaterial(
         float red,
         float green,

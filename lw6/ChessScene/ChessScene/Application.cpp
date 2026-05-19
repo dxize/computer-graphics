@@ -129,7 +129,7 @@ void Application::Shutdown()
 
     glfwTerminate();
 }
-
+    
 void Application::ConfigureOpenGl()
 {
     glEnable(GL_DEPTH_TEST);
@@ -178,12 +178,6 @@ void Application::ConfigureLighting()
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
-    float globalAmbient[] =
-    {
-        0.35f, 0.35f, 0.35f, 1.0f
-    };
-
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
     float lightPosition[] =
@@ -193,7 +187,7 @@ void Application::ConfigureLighting()
 
     float lightAmbient[] =
     {
-        0.05f, 0.05f, 0.05f, 1.0f
+        0.4f, 0.4f, 0.4f, 1.0f
     };
 
     float lightDiffuse[] =

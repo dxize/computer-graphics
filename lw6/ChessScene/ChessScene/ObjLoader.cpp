@@ -68,7 +68,6 @@ bool ObjLoader::ProcessObjLine(
 
         AddFaceTriangles(faceVertices, model);
     }
-    // Игнорируем mtllib, usemtl и всё остальное
 
     return true;
 }

@@ -63,4 +63,4 @@ void OrbitCamera::Apply() const
     glRotatef(m_pitch, 1.0f, 0.0f, 0.0f);
     glRotatef(m_yaw, 0.0f, 1.0f, 0.0f);
     glTranslatef(0.0f, -0.5f, 0.0f);
-}
+}   

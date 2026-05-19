@@ -62,21 +62,6 @@ Vec3 Model::GetMin() const
     return m_min;
 }
 
-Vec3 Model::GetMax() const
-{
-    return m_max;
-}
-
-float Model::GetWidthX() const
-{
-    return m_max.X - m_min.X;
-}
-
-float Model::GetWidthZ() const
-{
-    return m_max.Z - m_min.Z;
-}
-
 float Model::GetHeight() const
 {
     return m_max.Y - m_min.Y;
@@ -103,38 +88,14 @@ void Model::UpdateBounds(const Vec3& vertex)
 
 void Model::DrawTriangle(const Triangle& triangle) const
 {
-    Vec3 faceNormal = CalculateFaceNormal(triangle);
-
     for (int i = 0; i < 3; ++i)
     {
         const VertexReference& vertexReference = triangle.Vertices[i];
 
-        if (
-            vertexReference.NormalIndex >= 0 &&
-            vertexReference.NormalIndex < static_cast<int>(m_normals.size())
-            )
-        {
-            const Vec3& normal = m_normals[vertexReference.NormalIndex];
-            glNormal3f(normal.X, normal.Y, normal.Z);
-        }
-        else
-        {
-            glNormal3f(faceNormal.X, faceNormal.Y, faceNormal.Z);
-        }
-
+        const Vec3& normal = m_normals[vertexReference.NormalIndex];
+        glNormal3f(normal.X, normal.Y, normal.Z);
+    
         const Vec3& vertex = m_vertices[vertexReference.PositionIndex];
         glVertex3f(vertex.X, vertex.Y, vertex.Z);
     }
-}
-
-Vec3 Model::CalculateFaceNormal(const Triangle& triangle) const
-{
-    const Vec3& a = m_vertices[triangle.Vertices[0].PositionIndex];
-    const Vec3& b = m_vertices[triangle.Vertices[1].PositionIndex];
-    const Vec3& c = m_vertices[triangle.Vertices[2].PositionIndex];
-
-    Vec3 ab = Subtract(b, a);
-    Vec3 ac = Subtract(c, a);
-
-    return Normalize(Cross(ab, ac));
 }

@@ -6,11 +6,11 @@
 const float BoardMin = -4.0f;
 const float SquareSize = 1.0f;
 
-const float WhiteRotationY = 90.0f;
-const float BlackRotationY = 270.0f;
+const float WhiteRotationY = 270.0f;
+const float BlackRotationY = 90.0f;
 
 const float DesiredKingHeight = 1.25f;
-const float Pi = 3.1415926535f;
+const float Pi = 3.1415f;
 
 bool ChessScene::Load()
 {
@@ -149,9 +149,6 @@ void ChessScene::UpdateAnimation(float deltaTime)
 {
     m_animationTime += deltaTime;
 
-    // Анимация партии:
-    // 1. f3 e5
-    // 2. g4 Qh4#
     AnimatePiece(m_whiteF2Pawn, 5, 1, 5, 2, 0.5f, 1.0f);
     AnimatePiece(m_blackE7Pawn, 4, 6, 4, 4, 2.0f, 1.0f);
     AnimatePiece(m_whiteG2Pawn, 6, 1, 6, 3, 3.5f, 1.0f);
@@ -197,73 +194,101 @@ void ChessScene::AnimatePiece(
 
     float t = (m_animationTime - startTime) / duration;
 
-    // Плавное движение
-    float smooth = t * t * (3.0f - 2.0f * t);
-
-    piece.X = start.X + (end.X - start.X) * smooth;
-    piece.Z = start.Z + (end.Z - start.Z) * smooth;
+    piece.X = start.X + (end.X - start.X) * t;
+    piece.Z = start.Z + (end.Z - start.Z) * t;
 }
 
 Vec3 ChessScene::GetSquarePosition(int file, int rank) const
 {
     return
     {
-        -3.5f + static_cast<float>(file),
+        3.5f - static_cast<float>(file),
         0.0f,
-        3.5f - static_cast<float>(rank)
+        -3.5f + static_cast<float>(rank)
     };
 }
 
 void ChessScene::DrawBoard() const
 {
-    // Основание доски
+    DrawBoardBase();
+    DrawBoardSquares();
+}
+
+void ChessScene::DrawBoardBase() const
+{
     ApplyMaterial(0.32f, 0.30f, 0.26f, 0.05f, 8.0f);
 
     glBegin(GL_QUADS);
 
-    glNormal3f(0.0f, 1.0f, 0.0f);
+        glNormal3f(0.0f, 1.0f, 0.0f);
 
-    glVertex3f(-4.3f, 0.02f, -4.3f);
-    glVertex3f(4.3f, 0.02f, -4.3f);
-    glVertex3f(4.3f, 0.02f, 4.3f);
-    glVertex3f(-4.3f, 0.02f, 4.3f);
+        glVertex3f(-4.3f, 0.02f, -4.3f);
+        glVertex3f(4.3f, 0.02f, -4.3f);
+        glVertex3f(4.3f, 0.02f, 4.3f);
+        glVertex3f(-4.3f, 0.02f, 4.3f);
 
     glEnd();
+}
 
-    // Клетки
+void ChessScene::DrawBoardSquares() const
+{
     for (int rank = 0; rank < 8; ++rank)
     {
         for (int file = 0; file < 8; ++file)
         {
-            bool isLight = ((file + rank) % 2) == 0;
-
-            if (isLight)
-            {
-                ApplyMaterial(0.95f, 0.90f, 0.78f, 0.08f, 10.0f);
-            }
-            else
-            {
-                ApplyMaterial(0.20f, 0.20f, 0.20f, 0.25f, 25.0f);
-            }
-
-            float x0 = BoardMin + file * SquareSize;
-            float x1 = x0 + SquareSize;
-
-            float z0 = BoardMin + rank * SquareSize;
-            float z1 = z0 + SquareSize;
-
-            glBegin(GL_QUADS);
-
-            glNormal3f(0.0f, 1.0f, 0.0f);
-
-            glVertex3f(x0, 0.06f, z0);
-            glVertex3f(x1, 0.06f, z0);
-            glVertex3f(x1, 0.06f, z1);
-            glVertex3f(x0, 0.06f, z1);
-
-            glEnd();
+            DrawBoardSquare(file, rank);
         }
     }
+}
+
+void ChessScene::DrawBoardSquare(int file, int rank) const
+{
+    bool isLight = IsLightSquare(file, rank);
+
+    ApplyBoardSquareMaterial(isLight);
+
+    Vec3 center = GetSquarePosition(file, rank);
+
+    float halfSize = SquareSize / 2.0f;
+
+    float x0 = center.X - halfSize;
+    float x1 = center.X + halfSize;
+
+    float z0 = center.Z - halfSize;
+    float z1 = center.Z + halfSize;
+
+    DrawFlatSquare(x0, x1, z0, z1);
+}
+
+bool ChessScene::IsLightSquare(int file, int rank) const
+{
+    return ((file + rank) % 2) != 0;
+}
+
+void ChessScene::ApplyBoardSquareMaterial(bool isLight) const
+{
+    if (isLight)
+    {
+        ApplyMaterial(0.95f, 0.90f, 0.78f, 0.08f, 10.0f);
+    }
+    else
+    {
+        ApplyMaterial(0.20f, 0.20f, 0.20f, 0.25f, 25.0f);
+    }
+}
+
+void ChessScene::DrawFlatSquare(float x0, float x1, float z0, float z1) const
+{
+    glBegin(GL_QUADS);
+
+        glNormal3f(0.0f, 1.0f, 0.0f);
+
+        glVertex3f(x0, 0.06f, z0);
+        glVertex3f(x1, 0.06f, z0);
+        glVertex3f(x1, 0.06f, z1);
+        glVertex3f(x0, 0.06f, z1);
+
+    glEnd();
 }
 
 void ChessScene::DrawPieces() const
@@ -315,7 +340,6 @@ void ChessScene::DrawModel(
     glRotatef(rotationY, 0.0f, 1.0f, 0.0f);
     glScalef(scale, scale, scale);
 
-    // Центруем модель и ставим её нижней частью на доску
     glTranslatef(-center.X, -min.Y, -center.Z);
 
     model.Draw();
@@ -398,9 +422,9 @@ void ChessScene::ApplyMaterial(
 {
     float ambient[] =
     {
-        red * 0.5f,
-        green * 0.5f,
-        blue * 0.5f,
+        red * 0.9f,
+        green * 0.9f,
+        blue * 0.9f,
         1.0f
     };
 
