@@ -1,0 +1,2 @@
+C:\Users\gimps\study\computer-graphics\lw7\Task2\x64\Debug\Flag.vert
+C:\Users\gimps\study\computer-graphics\lw7\Task2\x64\Debug\RussianFlag.frag

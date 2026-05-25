@@ -1,0 +1,2 @@
+C:\Users\gimps\study\computer-graphics\lw7\Task3\x64\Debug\Morph.vert
+C:\Users\gimps\study\computer-graphics\lw7\Task3\x64\Debug\Morph.frag
