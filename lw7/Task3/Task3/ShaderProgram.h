@@ -1,46 +1,42 @@
 #pragma once
 
-#include "Math.h"
-#include "Vec3.h"
-
 #include <GL/glew.h>
 
-#include <string>
+#include <glm/glm/glm.hpp>
 
 class ShaderProgram
 {
 public:
-    ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath);
+    ShaderProgram(const char* vertexPath, const char* fragmentPath);
     ~ShaderProgram();
-
-    ShaderProgram(const ShaderProgram&) = delete;
-    ShaderProgram& operator=(const ShaderProgram&) = delete;
 
     void build();
     void use() const;
 
-    void setFloat(const char* name, float value) const;
-    void setVec3(const char* name, const Vec3& value) const;
-    void setMat4(const char* name, const Mat4& value) const;
-
     bool isReady() const;
 
+    void setFloat(const char* name, float value) const;
+    void setVec3(const char* name, const glm::vec3& value) const;
+    void setMat4(const char* name, const glm::mat4& value) const;
+
 private:
-    std::string readFile(const std::string& path) const;
+    GLuint compileShader(GLenum type, const char* source) const;
 
-    GLuint createShader(GLenum type, const std::string& code) const;
+    void setShaderSource(GLuint shader, const char* source) const;
+    bool compileAndCheckShader(GLuint shader) const;
+    void printShaderError(GLuint shader) const;
+
     GLuint createProgram(GLuint vertexShader, GLuint fragmentShader) const;
-
-    bool checkShader(GLuint shader) const;
-    bool checkProgram(GLuint program) const;
+    void attachShaders(GLuint program, GLuint vertexShader, GLuint fragmentShader) const;
+    bool linkAndCheckProgram(GLuint program) const;
+    void printProgramError(GLuint program) const;
+    void deleteShaders(GLuint vertexShader, GLuint fragmentShader) const;
 
     GLint getUniformLocation(const char* name) const;
-    void release();
 
 private:
-    GLuint m_id;
-    bool m_ready;
+    const char* m_vertexPath = nullptr;
+    const char* m_fragmentPath = nullptr;
 
-    std::string m_vertexPath;
-    std::string m_fragmentPath;
+    GLuint m_id = 0;
 };

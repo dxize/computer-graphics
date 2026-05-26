@@ -1,22 +1,19 @@
 #include "Application.h"
-
 #include "Constants.h"
 
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 
 Application::Application()
-    : m_window(nullptr),
-    m_surface(Constants::SURFACE_SEGMENTS_U, Constants::SURFACE_SEGMENTS_V),
+    : m_surface(Constants::GRID_SIZE, Constants::GRID_SIZE),
     m_shader(Constants::VERTEX_SHADER_PATH, Constants::FRAGMENT_SHADER_PATH),
-    m_yaw(0.0f),
-    m_pitch(0.25f),
-    m_distance(Constants::CAMERA_DISTANCE_START),
-    m_leftMousePressed(false),
-    m_wireframe(false),
-    m_wasWPressed(false),
-    m_lastMouseX(0.0),
-    m_lastMouseY(0.0)
+    m_width(Constants::WINDOW_WIDTH),
+    m_height(Constants::WINDOW_HEIGHT),
+    m_distance(Constants::CAMERA_DISTANCE_START)
 {
 }
 
@@ -27,162 +24,117 @@ Application::~Application()
 
 int Application::run()
 {
-    if (!initialize())
+    if (!init())
     {
         return EXIT_FAILURE;
     }
 
-    mainLoop();
+    loop();
     return EXIT_SUCCESS;
 }
 
-bool Application::initialize()
+bool Application::init()
 {
-    if (!initializeGlfw())
-    {
-        return false;
-    }
+    if (!initGlfw()) return false;
+    if (!createWindow()) return false;
+    setupCallbacks();
+    if (!initGlew()) return false;
 
-    if (!createWindow())
-    {
-        glfwTerminate();
-        return false;
-    }
+    setupOpenGL();
+    setupViewport();
 
-    setWindowContext();
-
-    if (!initializeGlew())
-    {
-        return false;
-    }
-
-    setOpenGL();
-    buildScene();
-    initializeProjection();
-
-    return m_shader.isReady();
+    return buildScene();
 }
 
-bool Application::initializeGlfw()
+bool Application::initGlfw()
 {
     if (!glfwInit())
     {
-        std::cerr << "Не удалось инициализировать GLFW.\n";
+        std::cout << "GLFW init error\n";
         return false;
     }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     return true;
 }
 
 bool Application::createWindow()
 {
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
     m_window = glfwCreateWindow(
-        Constants::INITIAL_WINDOW_WIDTH,
-        Constants::INITIAL_WINDOW_HEIGHT,
+        Constants::WINDOW_WIDTH,
+        Constants::WINDOW_HEIGHT,
         Constants::WINDOW_TITLE,
         nullptr,
         nullptr
     );
 
-    if (m_window == nullptr)
+    if (!m_window)
     {
-        std::cerr << "Не удалось создать окно GLFW.\n";
+        std::cout << "Window creation error\n";
         return false;
     }
+
+    glfwMakeContextCurrent(m_window);
+    glfwSwapInterval(1);
 
     return true;
 }
 
-void Application::setWindowContext()
+void Application::setupCallbacks()
 {
-    glfwMakeContextCurrent(m_window);
-    glfwSwapInterval(1);
     glfwSetWindowUserPointer(m_window, this);
-
-    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
-    glfwSetMouseButtonCallback(m_window, mouseButtonCallback);
-    glfwSetCursorPosCallback(m_window, cursorPositionCallback);
-    glfwSetScrollCallback(m_window, scrollCallback);
+    glfwSetFramebufferSizeCallback(m_window, onResize);
+    glfwSetMouseButtonCallback(m_window, onMouseButton);
+    glfwSetCursorPosCallback(m_window, onMouseMove);
+    glfwSetScrollCallback(m_window, onMouseScroll);
 }
 
-bool Application::initializeGlew()
+bool Application::initGlew()
 {
     glewExperimental = GL_TRUE;
 
     if (glewInit() != GLEW_OK)
     {
-        std::cerr << "Не удалось инициализировать GLEW.\n";
+        std::cout << "GLEW init error\n";
         return false;
     }
 
-    glGetError();
     return true;
 }
 
-void Application::setOpenGL()
+void Application::setupOpenGL()
 {
+    glEnable(GL_DEPTH_TEST);
+
     glClearColor(
         Constants::BACKGROUND_R,
         Constants::BACKGROUND_G,
         Constants::BACKGROUND_B,
         Constants::BACKGROUND_A
     );
-
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
 }
 
-void Application::buildScene()
-{
-    m_surface.build();
-    m_shader.build();
-}
-
-void Application::initializeProjection()
+void Application::setupViewport()
 {
     int width = 0;
     int height = 0;
 
     glfwGetFramebufferSize(m_window, &width, &height);
-    m_projection.update(width, height);
+    resize(width, height);
 }
 
-void Application::processInput()
+bool Application::buildScene()
 {
-    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(m_window, GLFW_TRUE);
-    }
+    m_surface.build();
+    m_shader.build();
 
-    const bool wPressed = glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS;
-
-    if (wPressed && !m_wasWPressed)
-    {
-        m_wireframe = !m_wireframe;
-    }
-
-    m_wasWPressed = wPressed;
+    return m_shader.isReady();
 }
 
-void Application::updateShaderUniforms()
-{
-    m_shader.use();
-
-    m_shader.setMat4("uModel", Mat4::identity());
-    m_shader.setMat4("uView", viewMatrix());
-    m_shader.setMat4("uProjection", projectionMatrix());
-
-    m_shader.setFloat("uTime", static_cast<float>(glfwGetTime()));
-
-    m_shader.setVec3("uLightPosition", { 2.3f, 3.0f, 2.4f });
-    m_shader.setVec3("uBaseColor", { 0.08f, 0.28f, 1.0f });
-}
-
-void Application::mainLoop()
+void Application::loop()
 {
     while (!glfwWindowShouldClose(m_window))
     {
@@ -196,95 +148,110 @@ void Application::mainLoop()
     }
 }
 
-void Application::shutdown()
+void Application::processInput()
 {
-    if (m_window != nullptr)
+    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        glfwDestroyWindow(m_window);
-        m_window = nullptr;
+        glfwSetWindowShouldClose(m_window, GLFW_TRUE);
     }
 
-    glfwTerminate();
-}
+    bool wPressed = glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS;
 
-Vec3 Application::cameraPosition() const
-{
-    return
+    if (wPressed && !m_wasWPressed)
     {
+        m_wireframe = !m_wireframe;
+    }
+
+    m_wasWPressed = wPressed;
+}
+
+void Application::updateShaderUniforms()
+{
+    m_shader.use();
+
+    m_shader.setMat4("uModel", glm::mat4(1.0f));
+    m_shader.setMat4("uView", viewMatrix());
+    m_shader.setMat4("uProjection", projectionMatrix());
+
+    m_shader.setFloat("uTime", static_cast<float>(glfwGetTime()));
+    m_shader.setVec3("uLightPosition", glm::vec3(3.0f, -4.0f, 5.0f));
+}
+
+glm::mat4 Application::viewMatrix() const
+{
+    glm::vec3 eye(
+        m_distance * std::cos(m_pitch) * std::cos(m_yaw),
         m_distance * std::cos(m_pitch) * std::sin(m_yaw),
-        m_distance * std::sin(m_pitch),
-        m_distance * std::cos(m_pitch) * std::cos(m_yaw)
-    };
-}
-
-Mat4 Application::viewMatrix() const
-{
-    return Mat4::lookAt(
-        cameraPosition(),
-        { 0.0f, 0.0f, 0.0f },
-        { 0.0f, 1.0f, 0.0f }
+        m_distance * std::sin(m_pitch)
     );
+
+    glm::vec3 center(0.0f, 0.0f, 0.0f);
+    glm::vec3 up(0.0f, 0.0f, 1.0f);
+
+    return glm::lookAt(eye, center, up);
 }
 
-Mat4 Application::projectionMatrix() const
+glm::mat4 Application::projectionMatrix() const
 {
-    return Mat4::perspective(
-        Math::radians(45.0f),
-        m_projection.aspectRatio(),
+    float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
+
+    return glm::perspective(
+        glm::radians(45.0f),
+        aspect,
         0.1f,
         100.0f
     );
 }
 
-void Application::onFramebufferSizeChanged(int width, int height)
+void Application::resize(int width, int height)
 {
-    m_projection.update(width, height);
+    m_width = width > 0 ? width : 1;
+    m_height = height > 0 ? height : 1;
+
+    glViewport(0, 0, m_width, m_height);
 }
 
-void Application::onMouseButtonChanged(int button, int action)
+void Application::mouseButton(int button, int action)
 {
     if (button != GLFW_MOUSE_BUTTON_LEFT)
     {
         return;
     }
 
-    if (action == GLFW_PRESS)
-    {
-        m_leftMousePressed = true;
-        glfwGetCursorPos(m_window, &m_lastMouseX, &m_lastMouseY);
-    }
-    else if (action == GLFW_RELEASE)
-    {
-        m_leftMousePressed = false;
-    }
+    m_mousePressed = action == GLFW_PRESS;
+    glfwGetCursorPos(m_window, &m_lastMouseX, &m_lastMouseY);
 }
 
-void Application::onCursorMoved(double x, double y)
+void Application::mouseMove(double x, double y)
 {
-    if (!m_leftMousePressed)
+    if (!m_mousePressed)
     {
         return;
     }
 
-    const double dx = x - m_lastMouseX;
-    const double dy = y - m_lastMouseY;
+    float dx = static_cast<float>(x - m_lastMouseX);
+    float dy = static_cast<float>(y - m_lastMouseY);
 
-    m_lastMouseX = x;
-    m_lastMouseY = y;
+    const float sensitivity = 0.006f;
 
-    m_yaw += static_cast<float>(dx) * 0.006f;
-    m_pitch += static_cast<float>(dy) * 0.006f;
+    m_yaw += dx * sensitivity;
+    m_pitch += dy * sensitivity;
 
     m_pitch = Math::clamp(
         m_pitch,
-        Math::radians(-85.0f),
-        Math::radians(85.0f)
+        glm::radians(-85.0f),
+        glm::radians(85.0f)
     );
+
+    m_lastMouseX = x;
+    m_lastMouseY = y;
 }
 
-void Application::onMouseScrolled(double yOffset)
+void Application::mouseScroll(double offset)
 {
-    m_distance -= static_cast<float>(yOffset) * 0.25f;
+    const float sensitivity = 0.35f;
+
+    m_distance -= static_cast<float>(offset) * sensitivity;
 
     m_distance = Math::clamp(
         m_distance,
@@ -293,46 +260,37 @@ void Application::onMouseScrolled(double yOffset)
     );
 }
 
-void Application::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void Application::shutdown()
 {
-    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-
-    if (app != nullptr)
+    if (m_window)
     {
-        app->onFramebufferSizeChanged(width, height);
+        glfwDestroyWindow(m_window);
+        m_window = nullptr;
     }
+
+    glfwTerminate();
 }
 
-void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+void Application::onResize(GLFWwindow* window, int width, int height)
 {
-    (void)mods;
-
     Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-
-    if (app != nullptr)
-    {
-        app->onMouseButtonChanged(button, action);
-    }
+    app->resize(width, height);
 }
 
-void Application::cursorPositionCallback(GLFWwindow* window, double x, double y)
+void Application::onMouseButton(GLFWwindow* window, int button, int action, int)
 {
     Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-
-    if (app != nullptr)
-    {
-        app->onCursorMoved(x, y);
-    }
+    app->mouseButton(button, action);
 }
 
-void Application::scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+void Application::onMouseMove(GLFWwindow* window, double x, double y)
 {
-    (void)xOffset;
-
     Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    app->mouseMove(x, y);
+}
 
-    if (app != nullptr)
-    {
-        app->onMouseScrolled(yOffset);
-    }
+void Application::onMouseScroll(GLFWwindow* window, double, double yOffset)
+{
+    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    app->mouseScroll(yOffset);
 }

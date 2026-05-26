@@ -2,12 +2,9 @@
 
 #include <cstddef>
 
-MorphSurface::MorphSurface(int segmentsU, int segmentsV)
-    : m_segmentsU(segmentsU),
-    m_segmentsV(segmentsV),
-    m_vao(0),
-    m_vbo(0),
-    m_ebo(0)
+MorphSurface::MorphSurface(int segmentsX, int segmentsY)
+    : m_segmentsX(segmentsX),
+    m_segmentsY(segmentsY)
 {
 }
 
@@ -18,79 +15,106 @@ MorphSurface::~MorphSurface()
 
 void MorphSurface::build()
 {
-    buildGeometry();
-    createVertexArray();
-    createVertexBuffer();
-    createIndexBuffer();
+    std::vector<Vertex> vertices = createVertices();
+    std::vector<unsigned int> indices = createIndices();
+
+    m_indexCount = static_cast<GLsizei>(indices.size());
+
+    uploadToGpu(vertices, indices);
+}
+
+std::vector<Vertex> MorphSurface::createVertices() const
+{
+    std::vector<Vertex> vertices;
+
+    for (int y = 0; y <= m_segmentsY; ++y)
+    {
+        for (int x = 0; x <= m_segmentsX; ++x)
+        {
+            float px = -1.0f + 2.0f * x / m_segmentsX;
+            float py = -1.0f + 2.0f * y / m_segmentsY;
+
+            vertices.push_back({ { px, py, 0.0f } });
+        }
+    }
+
+    return vertices;
+}
+
+std::vector<unsigned int> MorphSurface::createIndices() const
+{
+    std::vector<unsigned int> indices;
+
+    for (int y = 0; y < m_segmentsY; ++y)
+    {
+        for (int x = 0; x < m_segmentsX; ++x)
+        {
+            unsigned int row1 = y * (m_segmentsX + 1);
+            unsigned int row2 = (y + 1) * (m_segmentsX + 1);
+
+            unsigned int a = row1 + x;
+            unsigned int b = row1 + x + 1;
+            unsigned int c = row2 + x;
+            unsigned int d = row2 + x + 1;
+
+            indices.push_back(a);
+            indices.push_back(c);
+            indices.push_back(b);
+
+            indices.push_back(b);
+            indices.push_back(c);
+            indices.push_back(d);
+        }
+    }
+
+    return indices;
+}
+
+void MorphSurface::uploadToGpu(
+    const std::vector<Vertex>& vertices,
+    const std::vector<unsigned int>& indices
+)
+{
+    createGpuObjects();
+
+    glBindVertexArray(m_vao);
+
+    uploadVertexBuffer(vertices);
+    uploadIndexBuffer(indices);
     setupVertexAttributes();
 
     glBindVertexArray(0);
 }
 
-void MorphSurface::draw() const
-{
-    glBindVertexArray(m_vao);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
-}
-
-void MorphSurface::buildGeometry()
-{
-    m_vertices.clear();
-    m_indices.clear();
-
-    m_vertices.reserve(static_cast<size_t>((m_segmentsU + 1) * (m_segmentsV + 1)));
-    m_indices.reserve(static_cast<size_t>(m_segmentsU * m_segmentsV * 6));
-
-    for (int y = 0; y <= m_segmentsV; ++y)
-    {
-        for (int x = 0; x <= m_segmentsU; ++x)
-        {
-            const float u = -1.0f + 2.0f * static_cast<float>(x) / static_cast<float>(m_segmentsU);
-            const float v = -1.0f + 2.0f * static_cast<float>(y) / static_cast<float>(m_segmentsV);
-
-            m_vertices.push_back({ { u, v, 0.0f } });
-        }
-    }
-
-    for (int y = 0; y < m_segmentsV; ++y)
-    {
-        for (int x = 0; x < m_segmentsU; ++x)
-        {
-            const unsigned int i0 = static_cast<unsigned int>(y * (m_segmentsU + 1) + x);
-            const unsigned int i1 = i0 + 1;
-            const unsigned int i2 = i0 + static_cast<unsigned int>(m_segmentsU + 1);
-            const unsigned int i3 = i2 + 1;
-
-            m_indices.push_back(i0);
-            m_indices.push_back(i2);
-            m_indices.push_back(i1);
-
-            m_indices.push_back(i1);
-            m_indices.push_back(i2);
-            m_indices.push_back(i3);
-        }
-    }
-}
-
-void MorphSurface::createVertexArray()
+void MorphSurface::createGpuObjects()
 {
     glGenVertexArrays(1, &m_vao);
-    glBindVertexArray(m_vao);
-}
-
-void MorphSurface::createVertexBuffer()
-{
     glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
+    glGenBuffers(1, &m_ebo);
 }
 
-void MorphSurface::createIndexBuffer()
+void MorphSurface::uploadVertexBuffer(const std::vector<Vertex>& vertices)
 {
-    glGenBuffers(1, &m_ebo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        vertices.size() * sizeof(Vertex),
+        vertices.data(),
+        GL_STATIC_DRAW
+    );
+}
+
+void MorphSurface::uploadIndexBuffer(const std::vector<unsigned int>& indices)
+{
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), m_indices.data(), GL_STATIC_DRAW);
+
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        indices.size() * sizeof(unsigned int),
+        indices.data(),
+        GL_STATIC_DRAW
+    );
 }
 
 void MorphSurface::setupVertexAttributes()
@@ -99,30 +123,45 @@ void MorphSurface::setupVertexAttributes()
         0,
         3,
         GL_FLOAT,
-        GL_FALSE,
-        sizeof(Vertex),
-        reinterpret_cast<void*>(offsetof(Vertex, position))
+        GL_FALSE, // не нормализовать данные
+        sizeof(Vertex), //размер одной вершины в байтах
+        nullptr
     );
+
     glEnableVertexAttribArray(0);
+}
+
+void MorphSurface::draw() const
+{
+    glBindVertexArray(m_vao);
+    glDrawElements(
+        GL_TRIANGLES,    // рисовать треугольники
+        m_indexCount,    // сколько индексов взять из EBO
+        GL_UNSIGNED_INT, // тип индексов: unsigned int
+        nullptr          // начать читать индексы с начала EBO
+    );
+    glBindVertexArray(0);
 }
 
 void MorphSurface::release()
 {
-    if (m_ebo != 0)
+    if (m_ebo)
     {
         glDeleteBuffers(1, &m_ebo);
         m_ebo = 0;
     }
 
-    if (m_vbo != 0)
+    if (m_vbo)
     {
         glDeleteBuffers(1, &m_vbo);
         m_vbo = 0;
     }
 
-    if (m_vao != 0)
+    if (m_vao)
     {
         glDeleteVertexArrays(1, &m_vao);
         m_vao = 0;
     }
+
+    m_indexCount = 0;
 }
