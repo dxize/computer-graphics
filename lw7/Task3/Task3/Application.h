@@ -29,7 +29,7 @@ private:
     void setupOpenGL();
     void setupViewport();
 
-    void loop();
+    void runLoop();
     void processInput();
     void updateShaderUniforms();
     void shutdown();

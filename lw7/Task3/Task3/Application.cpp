@@ -26,11 +26,11 @@ int Application::run()
 {
     if (!init())
     {
-        return EXIT_FAILURE;
+        return 1;
     }
 
-    loop();
-    return EXIT_SUCCESS;
+    runLoop();
+    return 0;
 }
 
 bool Application::init()
@@ -134,7 +134,7 @@ bool Application::buildScene()
     return m_shader.isReady();
 }
 
-void Application::loop()
+void Application::runLoop()
 {
     while (!glfwWindowShouldClose(m_window))
     {
@@ -169,7 +169,6 @@ void Application::updateShaderUniforms()
 {
     m_shader.use();
 
-    m_shader.setMat4("uModel", glm::mat4(1.0f));
     m_shader.setMat4("uView", viewMatrix());
     m_shader.setMat4("uProjection", projectionMatrix());
 

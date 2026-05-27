@@ -22,7 +22,7 @@ void MorphSurface::build()
 
     uploadToGpu(vertices, indices);
 }
-
+//что тако6 морфлинг как он работает
 std::vector<Vertex> MorphSurface::createVertices() const
 {
     std::vector<Vertex> vertices;

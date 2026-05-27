@@ -15,9 +15,6 @@ namespace Constants
 
     constexpr int GRID_SIZE = 120;
 
-    constexpr int SURFACE_SEGMENTS_U = GRID_SIZE;
-    constexpr int SURFACE_SEGMENTS_V = GRID_SIZE;
-
     constexpr float CAMERA_DISTANCE_START = 6.0f;
     constexpr float CAMERA_DISTANCE_MIN = 2.5f;
     constexpr float CAMERA_DISTANCE_MAX = 12.0f;

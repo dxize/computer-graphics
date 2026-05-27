@@ -2,7 +2,6 @@
 
 layout (location = 0) in vec3 aPosition;
 
-uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform float uTime;
@@ -38,10 +37,10 @@ void main()
     float dzdy = mix(2.0 * A * y, -2.0 * A * y, k);
     vec3 normal = normalize(vec3(-dzdx, -dzdy, 1.0));
 
-    vec4 worldPosition = uModel * vec4(position, 1.0);
+    vec4 worldPosition = vec4(position, 1.0);
 
     vWorldPosition = worldPosition.xyz;
-    vNormal = normalize(mat3(uModel) * normal);
+    vNormal = normalize(normal);
 
     gl_Position = uProjection * uView * worldPosition;
 }

@@ -10,7 +10,6 @@ namespace Constants
     constexpr float BACKGROUND_B = 0.08f;
     constexpr float BACKGROUND_A = 1.0f;
 
-    // Пропорция 3:2, как у государственного флага РФ.
     constexpr float FLAG_WIDTH = 2.0f;
     constexpr float FLAG_HEIGHT = 2.0f;
 
