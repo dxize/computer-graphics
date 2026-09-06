@@ -1,56 +1,82 @@
 #include "Fence.h"
 #include "../Palette.h"
-#include "../ShapeFactory.h"
 
-Fence::Fence(sf::Vector2f origin, float length, float picketW, float picketH, float gap)
-    : m_picketW(picketW)
-    , m_picketH(picketH)
-    , m_gap(gap)
+#include <algorithm>
+
+Fence::Fence(sf::Vector2f position, float width)
+    : m_topRail({ width, 10.0f })
+    , m_bottomRail({ width, 10.0f })
 {
-    setPosition(origin);
-    build(length);
+    CreatePickets(position, width);
+    SetupRails(position);
 }
 
-sf::RectangleShape Fence::makePicket(float x) const
+void Fence::CreatePickets(sf::Vector2f position, float width)
 {
-    return ShapeFactory::rect(
-        { m_picketW, m_picketH },
-        { x, -m_picketH },
-        Palette::PicketFill,
-        2.f,
-        Palette::PicketOutline);
-}
+    const float picketWidth = 18.0f;
+    const float picketHeight = 78.0f;
+    const float gap = 7.0f;
 
-sf::RectangleShape Fence::makeRail(float width, float yOffset) const
-{
-    return ShapeFactory::rect(
-        { width, 10.f },
-        { 0.f, yOffset },
-        Palette::RailFill);
-}
-
-void Fence::build(float length)
-{
-    m_pickets.clear();
-
-    for (float x = 0.f; x <= length; x += (m_picketW + m_gap))
-        m_pickets.push_back(makePicket(x));
-
-    const float railLeft = m_pickets.front().getPosition().x;
-    const float railRight = m_pickets.back().getPosition().x + m_picketW;
-    const float railW = railRight - railLeft;
-
-    m_rail1 = makeRail(railW, -60.f);
-    m_rail2 = makeRail(railW, -30.f);
-}
-
-void Fence::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    states.transform *= getTransform();
-    target.draw(m_rail1, states);
-    target.draw(m_rail2, states);
-    for (const auto& p : m_pickets)
+    for (float x = 0.0f; x < width; x += picketWidth + gap)
     {
-        target.draw(p, states);
+        const float widthLeft = width - x;
+
+        const float currentWidth = std::min(picketWidth, widthLeft);
+
+        CreatePicket(
+            position,
+            x,
+            currentWidth,
+            picketHeight
+        );
+    }
+}
+
+void Fence::CreatePicket(
+    sf::Vector2f position,
+    float x,
+    float width,
+    float height
+)
+{
+    sf::RectangleShape picket({ width, height });
+
+    picket.setPosition({position.x + x, position.y - height});
+
+    picket.setFillColor(Palette::Fence);
+    picket.setOutlineThickness(2.0f);
+    picket.setOutlineColor(Palette::FenceOutline);
+
+    m_pickets.push_back(picket);
+}
+
+void Fence::SetupRails(sf::Vector2f position)
+{
+    m_topRail.setPosition({
+        position.x,
+        position.y - 58.0f
+        });
+
+    m_topRail.setFillColor(Palette::FenceOutline);
+
+    m_bottomRail.setPosition({
+        position.x,
+        position.y - 30.0f
+        });
+
+    m_bottomRail.setFillColor(Palette::FenceOutline);
+}
+
+void Fence::draw(
+    sf::RenderTarget& target,
+    sf::RenderStates states
+) const
+{
+    target.draw(m_topRail, states);
+    target.draw(m_bottomRail, states);
+
+    for (const auto& picket : m_pickets)
+    {
+        target.draw(picket, states);
     }
 }

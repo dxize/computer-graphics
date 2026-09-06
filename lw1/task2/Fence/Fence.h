@@ -1,25 +1,29 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class Fence : public sf::Drawable, public sf::Transformable
+class Fence : public sf::Drawable
 {
 public:
-    Fence(sf::Vector2f origin, float length,
-        float picketW = 18.f, float picketH = 85.f, float gap = 6.f);
+    Fence(sf::Vector2f position, float width);
 
 private:
     std::vector<sf::RectangleShape> m_pickets;
-    sf::RectangleShape m_rail1;
-    sf::RectangleShape m_rail2;
 
-    float m_picketW;
-    float m_picketH;
-    float m_gap;
+    sf::RectangleShape m_topRail;
+    sf::RectangleShape m_bottomRail;
 
-    sf::RectangleShape makePicket(float x) const;
-    sf::RectangleShape makeRail(float width, float yOffset) const;
-    void build(float length);
+    void CreatePickets(sf::Vector2f position, float width);
+
+    void CreatePicket(
+        sf::Vector2f position,
+        float x,
+        float width,
+        float height
+    );
+
+    void SetupRails(sf::Vector2f position);
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

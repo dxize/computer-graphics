@@ -1,36 +1,27 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-struct Palette 
+struct Palette
 {
-    //Background
-    inline static const sf::Color Sky = sf::Color(170, 220, 255);
-    inline static const sf::Color Grass = sf::Color(90, 180, 90);
-    inline static const sf::Color Sun = sf::Color(255, 220, 80);
+    inline static const sf::Color WindowBackground{24, 28, 34};
+    inline static const sf::Color DragBorder{180, 185, 195};
 
-    //Fence
-    inline static const sf::Color PicketFill = sf::Color(210, 190, 140);
-    inline static const sf::Color PicketOutline = sf::Color(120, 95, 60);
-    inline static const sf::Color RailFill = sf::Color(190, 170, 120);
+    inline static const sf::Color Sky{165, 218, 252};
+    inline static const sf::Color Grass{92, 176, 92};
+    inline static const sf::Color Sun{255, 220, 80};
+    inline static const sf::Color SceneBorder{55, 60, 68};
 
-    //House
-    inline static const sf::Color HouseBaseFill = sf::Color(230, 200, 160);
-    inline static const sf::Color HouseBaseOutline = sf::Color(120, 90, 60);
+    inline static const sf::Color HouseWall{232, 201, 157};
+    inline static const sf::Color HouseOutline{105, 76, 48};
+    inline static const sf::Color Roof{164, 61, 51};
+    inline static const sf::Color RoofOutline{92, 31, 26};
+    inline static const sf::Color Chimney{145, 77, 67};
+    inline static const sf::Color Door{118, 70, 35};
+    inline static const sf::Color Window{205, 235, 255};
+    inline static const sf::Color WindowFrame{75, 75, 75};
+    inline static const sf::Color Knob{242, 214, 94};
 
-    inline static const sf::Color RoofFill = sf::Color(160, 60, 50);
-    inline static const sf::Color RoofOutline = sf::Color(90, 30, 25);
-
-    inline static const sf::Color ChimneyFill = sf::Color(150, 80, 70);
-    inline static const sf::Color ChimneyOutline = sf::Color(80, 40, 35);
-    inline static const sf::Color ChimneyTopFill = sf::Color(120, 60, 55);
-
-    inline static const sf::Color DoorFill = sf::Color(120, 70, 35);
-    inline static const sf::Color DoorOutline = sf::Color(60, 35, 18);
-    inline static const sf::Color KnobFill = sf::Color(240, 220, 120);
-
-    inline static const sf::Color WindowFill = sf::Color(210, 235, 255);
-    inline static const sf::Color WindowOutline = sf::Color(80, 80, 80);
-
-    //Path
-    inline static const sf::Color PathFill = sf::Color(170, 150, 120);
+    inline static const sf::Color Fence{210, 188, 137};
+    inline static const sf::Color FenceOutline{118, 92, 59};
+    inline static const sf::Color Path{174, 151, 119};
 };

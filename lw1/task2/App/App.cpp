@@ -1,57 +1,114 @@
 #include "App.h"
-#include <optional>
+#include "../Palette.h"
+
+#include <algorithm>
 
 App::App()
-    : m_window(createWindow())
-    , m_bg()
-    , m_fence({ 70.f, 420.f }, 830.f - 70.f)
-    , m_house({ 290.f, 250.f })
-    , m_path()
+    : m_window(sf::VideoMode(sf::Vector2u{900u, 600u}), "Village House")
+    , m_dragArea(sf::Vector2f{AreaWidth, AreaHeight})
 {
-    m_window.setFramerateLimit(60);
+    m_window.setFramerateLimit(144);
+
+    m_dragArea.setPosition({AreaLeft, AreaTop});
+    m_dragArea.setFillColor(sf::Color::Transparent);
+    m_dragArea.setOutlineThickness(2.0f);
+    m_dragArea.setOutlineColor(Palette::DragBorder);
+
+    m_scene.setPosition({130.0f, 100.0f});
 }
 
-int App::run()
+int App::Run()
 {
     while (m_window.isOpen())
     {
-        handleEvents();
-        render();
+        HandleEvents();
+        Render();
     }
+
     return 0;
 }
 
-sf::RenderWindow App::createWindow()
+void App::HandleEvents()
 {
-    return sf::RenderWindow(
-        sf::VideoMode({ 900u, 600u }),
-        sf::String(U"Домик в Деревне")
-    );
-}
-
-void App::handleEvents()
-{
-    while (const std::optional<sf::Event> e = m_window.pollEvent())
+    while (const auto event = m_window.pollEvent())
     {
-        if (e->is<sf::Event::Closed>())
-            m_window.close();
-
-        if (const auto* key = e->getIf<sf::Event::KeyPressed>())
+        if (event->is<sf::Event::Closed>())
         {
-            if (key->code == sf::Keyboard::Key::Escape)
+            m_window.close();
+        }
+
+        if (const auto* key = event->getIf<sf::Event::KeyPressed>())
+        {
+            if (key->scancode == sf::Keyboard::Scancode::Escape)
+            {
                 m_window.close();
+            }
+        }
+
+        if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            if (mouse->button == sf::Mouse::Button::Left)
+            {
+                StartDragging(m_window.mapPixelToCoords(mouse->position));
+            }
+        }
+
+        if (const auto* mouse = event->getIf<sf::Event::MouseMoved>())
+        {
+            if (m_dragging)
+            {
+                DragTo(m_window.mapPixelToCoords(mouse->position));
+            }
+        }
+
+        if (const auto* mouse = event->getIf<sf::Event::MouseButtonReleased>())
+        {
+            if (mouse->button == sf::Mouse::Button::Left)
+            {
+                StopDragging();
+            }
         }
     }
 }
 
-void App::render()
+void App::StartDragging(sf::Vector2f mousePosition)
 {
-    m_window.clear();
+    if (!m_scene.Contains(mousePosition))
+    {
+        return;
+    }
 
-    m_window.draw(m_bg);
-    m_window.draw(m_fence);
-    m_window.draw(m_path);
-    m_window.draw(m_house);
+    m_dragging = true;
+    m_grabOffset = mousePosition - m_scene.getPosition();
+}
+
+void App::DragTo(sf::Vector2f mousePosition)
+{
+    const sf::Vector2f sceneSize = m_scene.GetSize();
+    const sf::Vector2f wantedPosition = mousePosition - m_grabOffset;
+
+    const float minX = AreaLeft;
+    const float minY = AreaTop;
+    const float maxX = AreaLeft + AreaWidth - sceneSize.x;
+    const float maxY = AreaTop + AreaHeight - sceneSize.y;
+
+    m_scene.setPosition({
+        std::clamp(wantedPosition.x, minX, maxX),
+        std::clamp(wantedPosition.y, minY, maxY)
+    });
+}
+
+void App::StopDragging()
+{
+    m_dragging = false;
+}
+
+void App::Render()
+{
+    m_window.clear(Palette::WindowBackground);
+
+    m_window.draw(m_dragArea);
+    m_window.draw(m_scene);
 
     m_window.display();
 }
