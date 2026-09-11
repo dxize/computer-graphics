@@ -10,7 +10,6 @@ App::App()
     , m_openButton(m_openButtonSize)
     , m_fileText(m_font, "File", 18)
     , m_openText(m_font, "Open...", 18)
-    , m_emptyText(m_font, "File -> Open to choose an image", 24)
     , m_imageView(m_model)
 {
     if (!m_font.openFromFile("C:/Windows/Fonts/arial.ttf"))
@@ -32,8 +31,6 @@ App::App()
 
     m_openText.setPosition({ 12.0f, m_menuHeight + 5.0f });
     m_openText.setFillColor(Palette::Text);
-
-    m_emptyText.setFillColor(Palette::Text);
 
     m_window.setFramerateLimit(144);
 }

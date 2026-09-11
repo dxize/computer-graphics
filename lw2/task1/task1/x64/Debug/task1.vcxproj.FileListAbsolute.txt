@@ -7,4 +7,3 @@ C:\Users\gimps\study\computer-graphics\lw2\task1\x64\Debug\bz2d.dll
 C:\Users\gimps\study\computer-graphics\lw2\task1\x64\Debug\libpng16d.dll
 C:\Users\gimps\study\computer-graphics\lw2\task1\x64\Debug\brotlidec.dll
 C:\Users\gimps\study\computer-graphics\lw2\task1\x64\Debug\brotlicommon.dll
-C:\Users\gimps\study\computer-graphics\lw2\task1\task1\x64\Debug\task1.vcxproj.Up2Date

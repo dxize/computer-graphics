@@ -26,7 +26,6 @@ private:
 
     sf::Text m_fileText;
     sf::Text m_openText;
-    sf::Text m_emptyText;
 
     ImageModel m_model;
     ImageView m_imageView;
