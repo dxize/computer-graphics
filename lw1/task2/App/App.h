@@ -18,7 +18,6 @@ private:
     sf::RenderWindow m_window;
     sf::RectangleShape m_dragArea;
     VillageScene m_scene;
-    VillageScene m_scene1;
 
     bool m_dragging = false;
     sf::Vector2f m_grabOffset = {0.f, 0.f};

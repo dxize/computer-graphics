@@ -89,3 +89,4 @@ private:
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
+//отделить ui от модели
