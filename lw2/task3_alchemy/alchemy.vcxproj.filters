@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="App">
+      <UniqueIdentifier>{A1111111-1111-1111-1111-111111111111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{B2222222-2222-2222-2222-222222222222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{C3333333-3333-3333-3333-333333333333}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="View">
+      <UniqueIdentifier>{D4444444-4444-4444-4444-444444444444}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{E5555555-5555-5555-5555-555555555555}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+
+    <ClCompile Include="App\App.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+
+    <ClCompile Include="Game\AlchemyGame.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+
+    <ClCompile Include="Model\AlchemyModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+
+    <ClCompile Include="Model\RecipeBook.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+
+    <ClCompile Include="View\AlchemyView.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+
+    <ClCompile Include="View\AlchemyAudioView.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="Palette.h" />
+
+    <ClInclude Include="App\App.h">
+      <Filter>App</Filter>
+    </ClInclude>
+
+    <ClInclude Include="Game\AlchemyGame.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+
+    <ClInclude Include="Game\GameState.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+
+    <ClInclude Include="Model\AlchemyModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+
+    <ClInclude Include="Model\RecipeBook.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+
+    <ClInclude Include="View\AlchemyView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+
+    <ClInclude Include="View\AlchemyAudioView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Assets\air.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\alcohol.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\bacteria.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\boiler.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\combination.wav">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\detonating_gas.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\discovery.wav">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\dust.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\earth.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\electricity.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\energy.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\explosion.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\fire.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\geyser.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\hydrogen.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\lava.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\life.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\metal.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\molotov.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\mud.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\music.wav">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\oxygen.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\ozone.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\powder.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\pressure.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\smoke.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\steam.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\stone.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\storm.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\swamp.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\vodka.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\volcano.png">
+      <Filter>Assets</Filter>
+    </None>
+
+    <None Include="Assets\water.png">
+      <Filter>Assets</Filter>
+    </None>
+  </ItemGroup>
+</Project>
