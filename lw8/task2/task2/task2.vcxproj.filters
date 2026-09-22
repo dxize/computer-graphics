@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Application"><UniqueIdentifier>{5BAAA04A-B370-4FB5-B4E4-F4587788CE98}</UniqueIdentifier></Filter>
+    <Filter Include="Graphics"><UniqueIdentifier>{993F5255-27E8-4688-89F5-B81F11CD2EE6}</UniqueIdentifier></Filter>
+    <Filter Include="Lighting"><UniqueIdentifier>{8A148E54-B32A-4553-96AE-5D0376CA5587}</UniqueIdentifier></Filter>
+    <Filter Include="Materials"><UniqueIdentifier>{B4439B4C-CBB0-41DD-88D3-C669018C66E5}</UniqueIdentifier></Filter>
+    <Filter Include="Math"><UniqueIdentifier>{CF6308EA-1D65-4F3D-A44E-59D13D4CB7D1}</UniqueIdentifier></Filter>
+    <Filter Include="Rendering"><UniqueIdentifier>{21DC1B55-54A0-4B45-B381-E5E13ADB906A}</UniqueIdentifier></Filter>
+    <Filter Include="Shaders"><UniqueIdentifier>{E8D88BE9-ACBD-4775-B20C-F3221160A87C}</UniqueIdentifier></Filter>
+    <Filter Include="Window"><UniqueIdentifier>{2BD9B9DD-8B55-4B5D-B027-B38C3F5F8952}</UniqueIdentifier></Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application\Application.cpp"><Filter>Application</Filter></ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rendering\FullscreenQuad.cpp"><Filter>Rendering</Filter></ClCompile>
+    <ClCompile Include="Rendering\ShaderProgram.cpp"><Filter>Rendering</Filter></ClCompile>
+    <ClCompile Include="Window\GlfwContext.cpp"><Filter>Window</Filter></ClCompile>
+    <ClCompile Include="Window\Window.cpp"><Filter>Window</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application\Application.h"><Filter>Application</Filter></ClInclude>
+    <ClInclude Include="Graphics\Color.h"><Filter>Graphics</Filter></ClInclude>
+    <ClInclude Include="Lighting\Light.h"><Filter>Lighting</Filter></ClInclude>
+    <ClInclude Include="Materials\Material.h"><Filter>Materials</Filter></ClInclude>
+    <ClInclude Include="Math\Vector3.h"><Filter>Math</Filter></ClInclude>
+    <ClInclude Include="Rendering\FullscreenQuad.h"><Filter>Rendering</Filter></ClInclude>
+    <ClInclude Include="Rendering\ShaderProgram.h"><Filter>Rendering</Filter></ClInclude>
+    <ClInclude Include="Window\GlfwContext.h"><Filter>Window</Filter></ClInclude>
+    <ClInclude Include="Window\Window.h"><Filter>Window</Filter></ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\raytrace.frag"><Filter>Shaders</Filter></None>
+    <None Include="Shaders\raytrace.vert"><Filter>Shaders</Filter></None>
+    <None Include="..\vcpkg.json" />
+  </ItemGroup>
+</Project>

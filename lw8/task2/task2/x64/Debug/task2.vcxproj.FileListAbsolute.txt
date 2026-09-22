@@ -1,0 +1,1 @@
+C:\Users\gimps\study\computer-graphics\lw8\task2\x64\Debug\glfw3.dll

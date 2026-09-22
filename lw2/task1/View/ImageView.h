@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "../Model/ImageModel.h"
 
-class ImageView : public sf::Drawable
+class ImageView : public sf::Drawable//избавиться от topOffset и переделать под трансформ то есть в локальных координатах легче делать
 {
 public:
     ImageView(const ImageModel& model);

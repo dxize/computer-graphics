@@ -113,7 +113,8 @@ void AlchemyView::CenterText(sf::Text& text, sf::Vector2f center)
     });
 }
 
-void AlchemyView::Draw(sf::RenderTarget& target, const std::vector<WorkspaceItem>& workspaceItems, const DragState& drag, const sf::String& message, bool finished)
+void AlchemyView::Draw(sf::RenderTarget& target, const std::vector<WorkspaceItem>& workspaceItems, 
+    const DragState& drag, const sf::String& message, bool finished)
 {
     if (finished)
     {
@@ -241,7 +242,7 @@ void AlchemyView::DrawCardIcon(sf::RenderTarget& target, const std::string& id, 
 
     sprite.setPosition({
         position.x + (size.x - iconWidth) / 2.0f,
-        position.y + 5.0f + (maxIconHeight - iconHeight) / 2.0f
+        position.y + 5.0f + (maxIconHeight - iconHeight) / 2.0f 
         });
 
     target.draw(sprite);
@@ -256,7 +257,7 @@ void AlchemyView::DrawCardText(sf::RenderTarget& target, const std::string& id, 
     const float maxTextWidth = size.x - 8.0f;
     const float textScale = std::min(1.0f, maxTextWidth / bounds.size.x);
 
-    m_cardText.setScale({ textScale, textScale });
+    m_cardText.setScale({ textScale, textScale }); 
 
     const float textWidth = bounds.size.x * textScale;
 

@@ -13,3 +13,4 @@ C:\Users\gimps\study\computer-graphics\lw2\task3_alchemy\x64\Debug\ogg.dll
 C:\Users\gimps\study\computer-graphics\lw2\task3_alchemy\x64\Debug\vorbisfile.dll
 C:\Users\gimps\study\computer-graphics\lw2\task3_alchemy\x64\Debug\vorbisenc.dll
 C:\Users\gimps\study\computer-graphics\lw2\task3_alchemy\x64\Debug\FLAC.dll
+C:\Users\gimps\study\computer-graphics\lw2\task3_alchemy\alchemy\x64\Debug\alchemy.vcxproj.Up2Date

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <string>
 
-bool ImageModel::Load(const std::filesystem::path& path)
+bool ImageModel::Load(const std::filesystem::path& path)//устранить зависимость от ui библиотек
 {
     if (!LoadTexture(path))
     {

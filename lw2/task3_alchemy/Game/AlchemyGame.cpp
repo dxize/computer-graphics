@@ -281,9 +281,9 @@ void AlchemyGame::CombineWithWorkspace(const std::string& firstId, int targetInd
 
     RemoveCombinedItems(targetIndex, draggedIndex);
     AddCombinationResults(results, resultPosition);
-    PlayCombinationSounds(discoveredBefore);
+    PlayCombinationSounds(discoveredBefore);//использовать паттерн наблюдатель в ответ на игровые события (модель шлёт событие, отсылаю во вью)
 
-    SetCombinationMessage(firstId, secondId, results);
+    SetCombinationMessage(firstId, secondId, results);//использовать паттерн наблюдатель в ответ на игровые события (модель шлёт событие, отсылаю во вью)
 
     if (m_model.IsFinished())
     {
