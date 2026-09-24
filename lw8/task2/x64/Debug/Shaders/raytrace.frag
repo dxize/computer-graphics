@@ -32,11 +32,14 @@ uniform Light light;
 uniform Material material;
 
 const int BOX_COUNT = 2;
-const int SHADOW_SAMPLES = 32;
+const int SHADOW_SAMPLES = 64;
 const float EPSILON = 0.001;
 const float TAN_HALF_FOV = 0.57735026919;
-const float GOLDEN_ANGLE = 2.39996322973;
 const vec3 BACKGROUND = vec3(0.2, 0.2, 0.25);
+
+float random(vec3 seed) {
+    return fract(sin(dot(seed, vec3(12.9898, 78.233, 45.164))) * 43758.5453123); //fract(x) = x - floor(x) поэтому диапазон всегда от 0 до 1
+}
 
 vec3 GetBoxMin(int index)
 {
@@ -112,7 +115,7 @@ bool IsOccluded(vec3 point, vec3 normal, vec3 target)
 {
     vec3 toTarget = target - point;
     float targetDistance = length(toTarget);
-    vec3 direction = toTarget / targetDistance;
+    vec3 direction = toTarget / targetDistance; //normalize
     vec3 origin = point + normal * EPSILON;
 
     for (int i = 0; i < BOX_COUNT; ++i)
@@ -127,15 +130,15 @@ bool IsOccluded(vec3 point, vec3 normal, vec3 target)
 
 vec3 GetLightSample(vec3 point, int sampleIndex)
 {
-    vec3 forward = normalize(light.position - point);
-    vec3 helper = abs(forward.y) < 0.999 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
-    vec3 tangent = normalize(cross(forward, helper));
-    vec3 bitangent = cross(forward, tangent);
+    vec3 offset = vec3(
+        random(point + float(sampleIndex) * 0.1),
+        random(point + float(sampleIndex) * 0.2),
+        random(point + float(sampleIndex) * 0.3)
+    );
 
-    float index = float(sampleIndex) + 0.5;
-    float radius = sqrt(index / float(SHADOW_SAMPLES)) * light.radius;
-    float angle = index * GOLDEN_ANGLE;
-    return light.position + radius * (cos(angle) * tangent + sin(angle) * bitangent);
+    vec3 dirOffset = normalize(offset * 2.0 - 1.0);
+
+    return light.position + dirOffset * light.radius;
 }
 
 float CalculateShadowFactor(vec3 point, vec3 normal)
@@ -144,12 +147,15 @@ float CalculateShadowFactor(vec3 point, vec3 normal)
         return IsOccluded(point, normal, light.position) ? 0.0 : 1.0;
 
     float visibleSamples = 0.0;
+
     for (int i = 0; i < SHADOW_SAMPLES; ++i)
     {
         vec3 samplePosition = GetLightSample(point, i);
+
         if (!IsOccluded(point, normal, samplePosition))
             visibleSamples += 1.0;
     }
+
     return visibleSamples / float(SHADOW_SAMPLES);
 }
 
