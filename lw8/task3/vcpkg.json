@@ -1,0 +1,11 @@
+{
+  "name": "cg-lab8-task3-polyhedra",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "glfw3",
+    {
+      "name": "glad",
+      "features": ["gl-api-33"]
+    }
+  ]
+}

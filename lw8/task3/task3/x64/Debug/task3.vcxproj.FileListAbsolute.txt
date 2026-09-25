@@ -1,0 +1,2 @@
+C:\Users\gimps\study\computer-graphics\lw8\task3_strict\x64\Debug\glfw3.dll
+C:\Users\gimps\study\computer-graphics\lw8\task3_strict\task3\x64\Debug\task3.vcxproj.Up2Date
