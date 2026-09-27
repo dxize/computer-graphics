@@ -1,0 +1,4 @@
+C:\Users\gimps\study\computer-graphics\lw8\task3_five_separate_final\Tetrahedron\x64\Debug\glfw3.dll
+C:\Users\gimps\study\computer-graphics\lw8\task3_five_separate_final\Tetrahedron\Tetrahedron\x64\Debug\Tetrahed.5F1267BD.Up2Date
+C:\Users\gimps\study\computer-graphics\lw8\task3\Tetrahedron\x64\Debug\glfw3.dll
+C:\Users\gimps\study\computer-graphics\lw8\task3\Tetrahedron\Tetrahedron\x64\Debug\Tetrahed.5F1267BD.Up2Date
