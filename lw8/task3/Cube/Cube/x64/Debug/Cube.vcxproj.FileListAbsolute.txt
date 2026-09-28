@@ -1,3 +1,4 @@
 C:\Users\gimps\study\computer-graphics\lw8\task3_five_separate_final\Cube\x64\Debug\glfw3.dll
 C:\Users\gimps\study\computer-graphics\lw8\task3_five_separate_final\Cube\Cube\x64\Debug\Cube.vcxproj.Up2Date
 C:\Users\gimps\study\computer-graphics\lw8\task3\Cube\x64\Debug\glfw3.dll
+C:\Users\gimps\study\computer-graphics\lw8\task3\Cube\Cube\x64\Debug\Cube.vcxproj.Up2Date

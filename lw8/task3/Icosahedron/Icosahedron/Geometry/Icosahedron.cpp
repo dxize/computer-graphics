@@ -58,8 +58,11 @@ bool TryCreateSupportingPlane(const Vector3& a, const Vector3& b,
     for (const Vector3& vertex : vertices)
     {
         const float side = Dot(plane.normal, vertex) + plane.distance;
-        hasPositive |= side > EPSILON;
-        hasNegative |= side < -EPSILON;
+        if (side > EPSILON)
+            hasPositive = true;
+
+        if (side < -EPSILON)
+            hasNegative = true;
     }
     if (hasPositive && hasNegative)
         return false;

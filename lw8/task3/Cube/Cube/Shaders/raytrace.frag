@@ -44,7 +44,7 @@ bool ClipByPlane(vec3 origin, vec3 direction, int planeIndex,
         nearDistance = distance;
         nearNormal = plane.xyz;
     }
-    if (denominator > 0.0 && distance < farDistance)
+    if (denominator > 0.0 && distance < farDistance) 
     {
         farDistance = distance;
         farNormal = plane.xyz;

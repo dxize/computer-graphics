@@ -29,18 +29,22 @@ bool ClipByPlane(vec3 origin, vec3 direction, int planeIndex,
     inout vec3 nearNormal, inout vec3 farNormal)
 {
     vec4 plane = facePlanes[planeIndex];
-    float numerator = dot(plane.xyz, origin) + plane.w;
-    float denominator = dot(plane.xyz, direction);
+    //насколько далеко камера находится от текущей плоскости, перпендикулярно этой плоскости, и с какой стороны
+    float numerator = dot(plane.xyz, origin) + plane.w; //Dot(normal, origin) - Dot(normal, a) = Dot(normal, origin - a)
+    //normal · (origin + direction * t) + D = 0
+    //normal·origin + D + normal·direction * t = 0 
+    float denominator = dot(plane.xyz, direction); //с какой скоростью эта дистанция меняется, когда мы движемся по лучу
     if (abs(denominator) < EPSILON)
         return numerator <= 0.0;
-
+    //normal·origin + D = -normal·direction * t ==> t = -(normal·origin + D)/normal·direction
     float distance = -numerator / denominator;
+
     if (denominator < 0.0 && distance > nearDistance)
     {
         nearDistance = distance;
         nearNormal = plane.xyz;
     }
-    if (denominator > 0.0 && distance < farDistance)
+    if (denominator > 0.0 && distance < farDistance) 
     {
         farDistance = distance;
         farNormal = plane.xyz;

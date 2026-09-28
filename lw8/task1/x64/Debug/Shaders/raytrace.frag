@@ -66,7 +66,7 @@ vec3 CalculateAmbient()
 
 vec3 CalculateDiffuse(vec3 normal, vec3 lightDirection)
 {
-    float intensity = max(dot(normal, lightDirection), 0.0);
+    float intensity = max(dot(normal, lightDirection), 0.0);  //dot(a, b) = ax*bx + ay*by + az*bz    и     dot(a, b) = |a| * |b| * cos(angel) скалярное произведение двух векторов
     return light.diffuse * material.diffuse * intensity;
 }
 
@@ -75,8 +75,8 @@ vec3 CalculateSpecular(vec3 normal, vec3 lightDirection, vec3 viewDirection)
     if (dot(normal, lightDirection) <= 0.0)
         return vec3(0.0);
 
-    vec3 reflected = reflect(-lightDirection, normal);
-    float angle = max(dot(viewDirection, reflected), 0.0);
+    vec3 reflected = reflect(-lightDirection, normal); //reflect отражённое направление считает
+    float angle = max(dot(viewDirection, reflected), 0.0); //косинус угла между viewDirection и reflected, то есть насколько сильно они сонаправлены или нет dot = 1 это 100 проц.
     float intensity = pow(angle, material.shininess);
     return light.specular * material.specular * intensity;
 }
@@ -89,7 +89,7 @@ vec3 CalculateLighting(vec3 point, vec3 normal)
     result += CalculateDiffuse(normal, lightDirection);
     result += CalculateSpecular(normal, lightDirection, viewDirection);
     return result;
-}
+}//C = La * Ma + Ld * Md * max(dot(N, L), 0) + Ls * Ms * pow(max(dot(R, V), 0), n) - формула освещения по фонгу
 
 void main()
 {

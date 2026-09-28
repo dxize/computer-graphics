@@ -31,6 +31,9 @@ Matrix4 Matrix4::Scale(const Vector3& scale)
 }
 
 Matrix4 Matrix4::RotationX(float radians)
+//x' = x
+//y' = y*cos(a) - z*sin(a)
+//z' = y*sin(a) + z*cos(a)
 {
     Matrix4 result = Identity();
     const float c = std::cos(radians);
